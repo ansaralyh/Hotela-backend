@@ -42,29 +42,44 @@ exports.getSingleRoom = catchAsyncErrors(async (req, res, next) => {
     });
 });
 
+//Get all rooms
 
-
-/** Get all rooms */
-// Get all rooms
 exports.getAllRooms = catchAsyncErrors(async (req, res, next) => {
-    const roomsPerPage = 2;
-    const allRooms = await room.find().populate('roomId');
-
-    if (!allRooms) {
-        return next(new ErrorHandler('Rooms not found', 404));
+    const rooms = await room.find();
+    if(!rooms){
+        return next(new ErrorHandler("Rooms not found",404))
     }
-
-    const rooms = new ApiFeatures(allRooms, req.query)
-        .search()
-        .filter()
-        .pagination(roomsPerPage);
-
-    res.status(200).json({
-        success: true,
-        rooms,
-        count: allRooms.length
-    });
+    res.status(201).json({
+        success:true,
+        rooms
+    })
 });
+
+
+// Get all available rooms  
+exports.getAllAvailableRooms = async (req, res, next) => {
+    try {
+        console.log('API is working fine')
+        const availableRooms = await room.find({room_status:'available'});
+        
+        if (!availableRooms || availableRooms.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "No rooms with available status found"
+            });
+        }
+        res.status(200).json({
+            success: true,
+            availableRooms
+        });
+    } catch (error) {
+        console.log(error)
+        return next(error);
+    }
+};
+
+
+
 /** Update room */
 exports.updateRoom = catchAsyncErrors(async (req, res, next) => {
     const roomId = req.params.roomId;

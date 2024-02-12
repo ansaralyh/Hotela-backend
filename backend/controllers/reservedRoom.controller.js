@@ -1,11 +1,11 @@
 const Room = require('../models/roomSchema');
 const Reservation = require('../models/reservedRoom.model');
 const catchAsyncErrors = require('../middleware/catchAsyncErrors');
+const ErrorHandler = require('../utils/ErrorHandler');
 
 
 exports.reserveRoom = catchAsyncErrors(async (req, res, next) => {
-    // console.log('Room reservation is working :',req.body);
-
+    
     try {
         const { reservedRoomDetails, otherDetails } = req.body;
 
@@ -14,7 +14,7 @@ exports.reserveRoom = catchAsyncErrors(async (req, res, next) => {
 
         
 
-        // Find room by ID and status
+      
         const room = await Room.findOne({ _id: room_id, room_status: 'available' });
         // console.log(room_id)
         console.log(room);
@@ -23,7 +23,7 @@ exports.reserveRoom = catchAsyncErrors(async (req, res, next) => {
             return res.status(404).json({ success: false, message: 'Room not found or already reserved' });
         }
 
-        // Check if room is already reserved
+       
         const existingReservation = await Reservation.findOne({ 'reservedRoomDetails.room_id': room_id });
         // console.log(existingReservation)
         if (existingReservation) {
@@ -78,27 +78,25 @@ const createReservation = async (bookingId, customerName, reservedBy, checkIn, c
 
 //Upadte reserve room
 exports.updateReservedRoom = catchAsyncErrors(async (req, res, next) => {
-    const { reservationId } = req.params;
-    const { reservedRoomDetails, otherDetails } = req.body;
-
-    try {
-        const updatedReservation = await Reservation.findByIdAndUpdate(reservationId, { reservedRoomDetails, otherDetails }, { new: true });
-
-        if (!updatedReservation) {
-            return res.status(404).json({ success: false, message: 'Reserved room not found' });
-        }
-
-        res.status(200).json({
-            success: true,
-            message: 'Reserved room updated successfully',
-            reservation: updatedReservation
-        });
-    } catch (error) {
-        console.log('Error:', error.message);
-        res.status(500).json({ success: false, message: 'Internal server error' });
-        next(error);
+    const reservedRoomId = req.params.room_id; 
+    console.log(reservedRoomId);
+    const updateData = req.body;
+    console.log(req.body);
+    const updatedData = await Reservation.findByIdAndUpdate(reservedRoomId, updateData, {
+        new: true,
+        runValidators: true
+    });
+    console.log(updatedData);
+    if (!updatedData) {
+        return next(new ErrorHandler('Reserved room not found'), 404);
     }
+
+    res.status(200).json({
+        success: true,
+        updateData
+    });
 });
+
 
 
 //Delete anyr reserved room
