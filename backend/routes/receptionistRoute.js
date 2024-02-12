@@ -4,18 +4,18 @@ const {auth} = require('../middleware/authentication');
 
 const router = express.Router();
 //create recceptionist
-router.route('/receptionist/create').post(auth,createReceptionist);
+router.post('/receptionist/create',auth,store);
 //get single receptionist
-router.route("/receptionist/view/:id").get(auth,getSingleReceptionist)
+router.get("/receptionist/view/:id",auth,get)
 
 //get ala receptionist 
-router.route("/receptionist/view").get(auth,getAllReceptionist);
+router.get("/receptionist/view",auth,index)
 
 //update receptionist
 
-router.route("/receptionist/update/:id").put(auth,updateReceptionist);
+router.put("/receptionist/update/:id",auth,update)
 
 //remove receptionist
 
-router.route("/receptionist/delete/:id").delete(auth,deleteReceptionist)
+router.delete("/receptionist/delete/:id",auth,destroy);
 module.exports = router;

@@ -5,7 +5,7 @@ const catchAsyncErrors = require('../middleware/catchAsyncErrors')
 const sendToken = require("../utils/jwtToken");
 const receptionist = require('../models/receptionistSchema');
 
-exports.createReceptionist = catchAsyncErrors(async (req, res, next) => {
+exports.store = catchAsyncErrors(async (req, res, next) => {
     const { name, password, confirmPassword, phoneNumber, dob } = req.body;
 
     if (password !== confirmPassword) {
@@ -33,7 +33,7 @@ exports.createReceptionist = catchAsyncErrors(async (req, res, next) => {
 
 /**Get single receptionist */
 
-exports.getSingleReceptionist = catchAsyncErrors(async (req, res, next) => {
+exports.get = catchAsyncErrors(async (req, res, next) => {
     const singleReceptionist = await receptionist.findById(req.params.id);
     
     if (!singleReceptionist) {
@@ -50,7 +50,7 @@ exports.getSingleReceptionist = catchAsyncErrors(async (req, res, next) => {
 
 /**Get all receptionsts */
 
-exports.getAllReceptionist = catchAsyncErrors(async (req,res,next) => {
+exports.index = catchAsyncErrors(async (req,res,next) => {
     const allReceptionists = await receptionist.find();
 
     if(!allReceptionists){
@@ -65,7 +65,7 @@ exports.getAllReceptionist = catchAsyncErrors(async (req,res,next) => {
 
 
 /** Update a receptionist */
-exports.updateReceptionist = catchAsyncErrors(async (req, res, next) => {
+exports.update = catchAsyncErrors(async (req, res, next) => {
     const receptionistId = req.params.id;
     const updateData = req.body; 
     const updatedReceptionist = await receptionist.findByIdAndUpdate(receptionistId, updateData, {
@@ -88,7 +88,7 @@ exports.updateReceptionist = catchAsyncErrors(async (req, res, next) => {
 
 /**Delete receptionist  */
 
-exports.deleteReceptionist = catchAsyncErrors(async (req, res, next) => {
+exports.destroy = catchAsyncErrors(async (req, res, next) => {
     const removeReceptionist = await receptionist.findById(req.params.id);
     if(!removeReceptionist)
     {

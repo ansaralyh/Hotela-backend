@@ -4,19 +4,19 @@ const { createOwner, ownerLogin, forgetPassword, verifyOtp, logout } = require('
 const router = express.Router()
 
 /**Create hotel route */
-router.route('/hotel/create').post(createOwner);
+router.route('/create').post(createOwner);
 
 /*Owner login route */
 
-router.route('/hotel/owner/login').post(ownerLogin);
+router.route('/owner/login').post(ownerLogin);
 
 // Owner logout
-router.route('/hotel/owner/logout').get(logout);
+router.route('/owner/logout').get(logout);
 
 // forget password
-router.route('/hotel/admin/forgetPasword').post(forgetPassword)
+router.route('/admin/forgetPasword').post(forgetPassword)
 
 //verify otp
-router.route('/hotel/admin/verifyOtp').post(verifyOtp)
+router.route('/admin/verifyOtp').post(verifyOtp)
 
 module.exports = router

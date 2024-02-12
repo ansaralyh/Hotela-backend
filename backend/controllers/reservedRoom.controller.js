@@ -79,14 +79,14 @@ const createReservation = async (bookingId, customerName, reservedBy, checkIn, c
 //Upadte reserve room
 exports.updateReservedRoom = catchAsyncErrors(async (req, res, next) => {
     const reservedRoomId = req.params.room_id; 
-    console.log(reservedRoomId);
+    // console.log(reservedRoomId);
     const updateData = req.body;
-    console.log(req.body);
+    // console.log(req.body);
     const updatedData = await Reservation.findByIdAndUpdate(reservedRoomId, updateData, {
         new: true,
         runValidators: true
     });
-    console.log(updatedData);
+    // console.log(updatedData);
     if (!updatedData) {
         return next(new ErrorHandler('Reserved room not found'), 404);
     }
