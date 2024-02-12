@@ -1,67 +1,66 @@
- const mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
- const reservedRoomSchema = new mongoose.Schema({
-    reservedRoomDetails:{
-        bookind_Id :{
-            type:Number,
-            required:[true,'Please enter a booking ID']
+const reservedRoomSchema = new mongoose.Schema({
+    reservedRoomDetails: {
+        booking_Id: {
+            type: Number,
+            // required: [true, 'Please enter a booking ID']
         },
-        customer_Name:{
-            type:String,
-            required:[true,'Please enter a customer name']
+        customer_Name: {
+            type: String,
+            // required: [true, 'Please enter a customer name']
         },
-        reservedBy:{
-            type:String,
-            required:true
+        reservedBy: {
+            type: String,
+            // required: [true, 'Please enter who reserved the room']
         },
-        checkIn:{
-            type:Date,
-            required:[true,'Please enter check in date']
+        checkIn: {
+            type: Date,
+            // required: [true, 'Please enter check-in date']
         },
-        checkOut:{
-            type:Date,
-            required:[true,'Please enter check out date']
+        checkOut: {
+            type: Date,
+            // required: [true, 'Please enter check-out date']
         },
-        roomId: {
+        room_id: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Room',
-            required: true
+            ref: 'room',
+            // required: [true, 'Please enter the room ID']
         },
     },
-    otherDetails:{
-        cnic:{
-            type:Number,
-            required:[true,'Please enter cnic number without dashes'],
-            minLength:[13,'CNIC number cannot be greater than 13 characters'],
+    otherDetails: {
+        cnic: {
+            type: Number,
+            // required: [true, 'Please enter CNIC number without dashes'],
+            min: [1000000000000, 'CNIC number cannot be less than 13 characters'],
+            max: [9999999999999, 'CNIC number cannot be greater than 13 characters'],
         },
-        bedType : {
+        bedType: {
             type: String,
-            // default:'Sinlge',
-            required:[true, 'Please enter beed type']
+            // required: [true, 'Please enter bed type']
         },
-        roomCategory : {
-            type:String,
+        roomCategory: {
+            type: String,
             // default:'luxury',
             // required:[true , 'please select room category']
         },
-
-        contact_Number:{
-            type:Number,
-            required:[true,'Please enter a contact number']
+        contact_Number: {
+            type: Number,
+            // required: [true, 'Please enter a contact number']
         },
-        roomRate:{
-            type:Number,
-            required:[true,'Please enter rrom rate']
+        roomRate: {
+            type: Number,
+            // required: [true, 'Please enter room rate']
         },
-        payment_Status:{
+        payment_Status: {
             type: String,
             default: 'un-paid',
-            required: [true, 'Please enter status'],
+            // required: [true, 'Please enter payment status'],
             enum: ['paid', 'un-paid'],
         }
     }
+});
 
- });
- const Reservation = mongoose.model('Reservation', reservedRoomSchema);
+const Reservation = mongoose.model('Reservation', reservedRoomSchema);
 
 module.exports = Reservation;

@@ -7,8 +7,8 @@ const router = express.Router();
 
 
 // Route to reserve a room
-router.route('/reserve').post( auth, isAuthorizedRole, reserveRoom);
+router.route('/reserve').post( auth, isAuthorizedRole("owner","receptionist"), reserveRoom);
 
-
+//route 
 
 module.exports = router;
