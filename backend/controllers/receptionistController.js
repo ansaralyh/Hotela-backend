@@ -1,4 +1,4 @@
-const ErrorHandler = require('../utils/ErrorHandler');
+// const ErrorHandler = require('../utils/ErrorHandler');
 const branch = require('../models/branchSchema')
 const bcrypt = require('bcrypt');
 const catchAsyncErrors = require('../middleware/catchAsyncErrors')

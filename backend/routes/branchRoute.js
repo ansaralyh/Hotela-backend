@@ -1,20 +1,20 @@
 const express = require('express')
 const {auth} = require('../middleware/authentication');
-const { createBranch, getSingleBranch, getAllBranches, updateBranch, deleteBranch } = require('../controllers/branchController');
+const { store, get, index, update, destroy } = require('../controllers/branchController');
 const router = express.Router()
 
-router.route('/branch/create').post(auth,createBranch);
+router.post('/branch/create',auth,store);
 
 /**Single branch route */
-router.route("/branch/view/:id").get(auth,getSingleBranch);
+router.get("/branch/view/:id",auth,get);
 
 /**Get all branches */
-router.route("/branch/view").get(auth,getAllBranches);
+router.get("/branch/view",auth,index)
 
 /**update a branch */
 
-router.route("/branch/update/:id").put(auth,updateBranch);
+router.put("/branch/update/:id",auth,update);
 
 /**delete a branch */
-router.route("/branch/delete/:id").delete(auth,deleteBranch);
+router.delete("/branch/delete/:id",auth,destroy);
 module.exports = router

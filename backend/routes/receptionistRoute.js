@@ -1,5 +1,5 @@
 const express = require('express')
-const { createReceptionist, getSingleReceptionist, getAllReceptionist, updateReceptionist, deleteReceptionist } = require('../controllers/receptionistController');
+const { store, get, index, update, destroy } = require('../controllers/receptionistController');
 const {auth} = require('../middleware/authentication');
 
 const router = express.Router();

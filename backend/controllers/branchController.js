@@ -1,9 +1,9 @@
 const Owner = require('../models/ownerSchema')
 const branch = require('../models/branchSchema')
-const ErrorHandler = require('../utils/ErrorHandler');
+// const ErrorHandler = require('../utils/ErrorHandler')
 const catchAsyncErrors = require('../middleware/catchAsyncErrors')
 
-exports.createBranch = catchAsyncErrors(async (req, res, next) => {
+exports.store = catchAsyncErrors(async (req, res, next) => {
     
     const {
         branch_id,
@@ -29,7 +29,7 @@ exports.createBranch = catchAsyncErrors(async (req, res, next) => {
 });
 
 /**Get single Branch */
-exports.getSingleBranch = catchAsyncErrors(async (req, res, next) =>{
+exports.get = catchAsyncErrors(async (req, res, next) =>{
     const singleBranch = await branch.findById(req.params.id);
     if(!singleBranch)
     {
@@ -42,7 +42,7 @@ exports.getSingleBranch = catchAsyncErrors(async (req, res, next) =>{
 });
 
 /**Get all branches */
-exports.getAllBranches = catchAsyncErrors(async (req,res,next) => {
+exports.index = catchAsyncErrors(async (req,res,next) => {
     const allBranches = await branch.find();
 
     if(!allBranches){
@@ -56,7 +56,7 @@ exports.getAllBranches = catchAsyncErrors(async (req,res,next) => {
 
 /**Update a Branch */
 
-exports.updateBranch = catchAsyncErrors(async (req, res, next) => {
+exports.update = catchAsyncErrors(async (req, res, next) => {
     const branchId = req.params.id;
     const updateData = req.body; 
     const updatedBranch = await branch.findByIdAndUpdate(branchId, updateData, {
@@ -78,7 +78,7 @@ exports.updateBranch = catchAsyncErrors(async (req, res, next) => {
 });
 
 /**Delete a branch */
-exports.deleteBranch = catchAsyncErrors(async (req, res, next) => {
+exports.destroy = catchAsyncErrors(async (req, res, next) => {
     const removeBranch = await branch.findById(req.params.id);
     if(!removeBranch)
     {

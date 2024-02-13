@@ -1,11 +1,11 @@
-const ErrorHandler = require('../utils/ErrorHandler');
+// const ErrorHandler = require('../utils/ErrorHandler');
 const bcrypt = require('bcrypt');
 const catchAsyncErrors = require('../middleware/catchAsyncErrors')
 const sendToken = require("../utils/jwtToken");
 const Employee = require('../models/employeeSchema'); 
 
 /**Create Single Employee */
-exports.createEmployee = catchAsyncErrors(async (req, res, next) => {
+exports.store = catchAsyncErrors(async (req, res, next) => {
     
     const {
         employeeId,
@@ -53,7 +53,7 @@ exports.createEmployee = catchAsyncErrors(async (req, res, next) => {
 /**Get single employee by empID */
 
 
-exports.getSingleEmployee = catchAsyncErrors(async (req, res, next) =>{
+exports.get = catchAsyncErrors(async (req, res, next) =>{
     const singleEmployee = await Employee.findOne({
         employeeId :req.params.employeeId });
         if(!singleEmployee) {
@@ -67,7 +67,7 @@ exports.getSingleEmployee = catchAsyncErrors(async (req, res, next) =>{
 });
 
 /**Get all employess */
-exports.getAllEmp = catchAsyncErrors(async (req, res, next) => {
+exports.index = catchAsyncErrors(async (req, res, next) => {
     const allEmployees = await Employee.find();
     if(!allEmployees)
     {
@@ -80,7 +80,7 @@ exports.getAllEmp = catchAsyncErrors(async (req, res, next) => {
 
 /** Update employee */
 
-exports.updateEmployee = catchAsyncErrors( async  (req,res,next)=> {
+exports.update = catchAsyncErrors( async  (req,res,next)=> {
     const employeeId = req.params.employeeId;
     const updatedFields = req.body;
 
@@ -101,7 +101,7 @@ exports.updateEmployee = catchAsyncErrors( async  (req,res,next)=> {
 
 /**Delete an employee */
 
-exports.deleteEmployee = catchAsyncErrors(async(req, res, next) => {
+exports.destroy = catchAsyncErrors(async(req, res, next) => {
     const employeeId = req.params.employeeId;
     const currentEmplpoyee = await Employee.findOne({employeeId});
     if (!currentEmplpoyee) {

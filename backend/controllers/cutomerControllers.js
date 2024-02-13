@@ -1,12 +1,12 @@
 const Customer = require('../models/customerScehma');
-const ErrorHandler = require('../utils/ErrorHandler');
+// const ErrorHandler = require('../utils/ErrorHandler');
 const bcrypt = require('bcrypt');
 const catchAsyncErrors = require('../middleware/catchAsyncErrors');
 const sendToken = require('../utils/jwtToken');
 
 
 // Create customer
-exports.createCustomer = catchAsyncErrors(async (req, res, next) => {
+exports.store = catchAsyncErrors(async (req, res, next) => {
     const { customer_id, name, cnic, gender, checkIn, checkOut, otherDetails } = req.body;
 
     try {
@@ -33,7 +33,7 @@ exports.createCustomer = catchAsyncErrors(async (req, res, next) => {
 
 // Get single customer by customer_id
 
-exports.getSingleCustomer = catchAsyncErrors(async (req, res, next) => {
+exports.get = catchAsyncErrors(async (req, res, next) => {
     try {
         const customer = await Customer.findOne({ customer_id: req.params.customer_id });
 
@@ -53,7 +53,7 @@ exports.getSingleCustomer = catchAsyncErrors(async (req, res, next) => {
 
 // Get all customers
 
-exports.getAllCustomers = catchAsyncErrors(async (req, res, next) => {
+exports.index = catchAsyncErrors(async (req, res, next) => {
     const allCustomers = await Customer.find();
     if (!allCustomers) {
         return next(new ErrorHandler('Customers not found'));
@@ -65,7 +65,7 @@ exports.getAllCustomers = catchAsyncErrors(async (req, res, next) => {
 });
 
 //Update customer details
-exports.updateCustomer = catchAsyncErrors(async (req, res, next) => {
+exports.update = catchAsyncErrors(async (req, res, next) => {
     const customer_id = req.params.customer_id;
     const updatedFields = req.body;
 
@@ -89,7 +89,7 @@ exports.updateCustomer = catchAsyncErrors(async (req, res, next) => {
 
 // Delete a customer by customer id
 
-exports.deleteCustomer = catchAsyncErrors(async(req,res,next)=>{
+exports.destroy = catchAsyncErrors(async(req,res,next)=>{
     const customer_id = req.params.customer_id;
     const currentCustomer = await Customer.findOne({ customer_id });
     if (!currentCustomer) {
@@ -102,6 +102,7 @@ exports.deleteCustomer = catchAsyncErrors(async(req,res,next)=>{
         deletedCustomer:currentCustomer
     })
 })
+
 // delete all customers
 exports.deleteAllCustomers = catchAsyncErrors(async (req, res, next) => {
     const allCustomers = await Customer.find();

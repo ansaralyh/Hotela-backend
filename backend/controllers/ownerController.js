@@ -1,5 +1,5 @@
 const Owner = require('../models/ownerSchema')
-const ErrorHandler = require('../utils/ErrorHandler');
+// const ErrorHandler = require('../utils/ErrorHandler');
 const bcrypt = require('bcrypt');
 const catchAsyncErrors = require('../middleware/catchAsyncErrors')
 const sendToken = require("../utils/jwtToken")
@@ -8,7 +8,7 @@ const nodemailer = require('nodemailer')
 const crypto = require('crypto')
 /** Create hotel controller*/
 
-exports.createOwner = catchAsyncErrors(async (req, res, next) => {
+exports.store = catchAsyncErrors(async (req, res, next) => {
 
     const {
         email,
@@ -43,7 +43,7 @@ exports.createOwner = catchAsyncErrors(async (req, res, next) => {
 
 /**Login Owner */
 
-exports.ownerLogin = catchAsyncErrors(async (req, res, next) => {
+exports.login = catchAsyncErrors(async (req, res, next) => {
     const { email, password } = req.body;
 
     if (!email || !password) {

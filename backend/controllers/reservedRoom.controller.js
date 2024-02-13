@@ -1,7 +1,7 @@
 const Room = require('../models/roomSchema');
 const Reservation = require('../models/reservedRoom.model');
 const catchAsyncErrors = require('../middleware/catchAsyncErrors');
-const ErrorHandler = require('../utils/ErrorHandler');
+// const ErrorHandler = require('../utils/ErrorHandler');
 
 
 exports.reserveRoom = catchAsyncErrors(async (req, res, next) => {

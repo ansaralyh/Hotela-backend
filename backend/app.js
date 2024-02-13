@@ -11,6 +11,7 @@ app.use(cookieParser());
 app.use('/api/v1', adminRoutes );
 
 
+
 //middleware
 app.use(errorMiddleware);
 

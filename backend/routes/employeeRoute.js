@@ -1,22 +1,22 @@
 const express = require('express');
 const auth = require('../middleware/authentication');
-const { createEmployee, getSingleEmployee, getAllEmp, updateEmployee, deleteEmployee } = require('../controllers/employeeController');
+const { store, get, index, update, destroy } = require('../controllers/employeeController');
 
 const router = express.Router();
 
 /**Create employee */
-router.route('/employee/create').post(createEmployee);
+router.post('/employee/create',store);
 
 /**Get single employee */
-router.route('/employee/view/:employeeId').get(getSingleEmployee);
+router.get('/employee/view/:employeeId',get);
 
 /**Get all employees */
-router.route('/employee/view').get(getAllEmp);
+router.get('/employee/view',index);
 
 /**Update employee */
-router.route('/employee/update/:employeeId').put(updateEmployee);
+router.put('/employee/update/:employeeId',update);
 
 
 /**Delete employee */
-router.route('/employee/delete/:employeeId').delete(deleteEmployee)
+router.delete('/employee/delete/:employeeId',destroy)
 module.exports = router;
