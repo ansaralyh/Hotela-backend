@@ -10,57 +10,47 @@ const ownerSchema = new mongoose.Schema({
         required: [true, 'Please enter email'],
         unique: true,
         validate: [validator.isEmail, "Please enter a valid email"]
-
-
     },
     password: {
         type: String,
-        minLength: [8, "password cannot be less than 8characters"],
+        minLength: [8, "Password cannot be less than 8 characters"],
         required: [true, 'Please enter password'],
     },
     firstName: {
         type: String,
         required: [true, 'Please enter first name'],
-        maxLength: [10, "First name cannot exceed 10 Characters"],
-        minLength: [3, "First name cannot be less than 5 characters "]
+        maxLength: [10, "First name cannot exceed 10 characters"],
+        minLength: [3, "First name cannot be less than 3 characters"]
     },
     lastName: {
         type: String,
         required: [true, 'Please enter last name'],
-        maxLength: [10, "last name cannot exceed 10 Characters"],
-        minLength: [3, "last name cannot be less than 5 characters "]
+        maxLength: [10, "Last name cannot exceed 10 characters"],
+        minLength: [3, "Last name cannot be less than 3 characters"]
     },
     phoneNumber: {
-        type: Number,
-
+        type: String,
         required: [true, 'Please enter mobile number']
     },
     cnic: {
-        type: Number,
-        required: [true, 'Please enter cnic number']
+        type: String, 
+        required: [true, 'Please enter CNIC number']
     },
     dateOfBirth: {
         type: Date,
-        required: true
+        required: [true, 'Please enter date of birth']
     },
     profilePicture: {
         public_id: {
             type: String,
-            required: true
         },
         url: {
             type: String,
-            required: true
         }
     },
-    createdAt: {
-        type: Date,
-        required: true,
-        default: Date.now
-    },
-    role:{
-        type:String,
-        default:"receptionist"
+    role: {
+        type: String,
+        default: "owner"
     }
 });
 

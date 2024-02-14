@@ -1,35 +1,27 @@
 const Owner = require('../models/ownerSchema')
-// const ErrorHandler = require('../utils/ErrorHandler');
+const ErrorHandler = require('../utils/ErrorHandler');
 const bcrypt = require('bcrypt');
 const catchAsyncErrors = require('../middleware/catchAsyncErrors')
 const sendToken = require("../utils/jwtToken")
 const Otp = require('../models/otp.model')
 const nodemailer = require('nodemailer')
 const crypto = require('crypto')
+
 /** Create hotel controller*/
-
 exports.store = catchAsyncErrors(async (req, res, next) => {
+ 
+    const hashedPassword = await bcrypt.hash(req.body.password,10);
+    req.body.password = hashedPassword;
+    const owner = await Owner.create(req.body);
 
-    const {
-        email,
-        password, firstName, lastName, phoneNumber, cnic, dateOfBirth,role } = req.body;
+   res.status(200).json({
+    success:true,
+    owner
+   })
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const owner = await Owner.create({ password: hashedPassword, });
-    res.status(200).json({
-        success: true,
-        owner,
-    })
 });
 
-
-
-
-
-
-
 /**Login Owner */
-
 exports.login = catchAsyncErrors(async (req, res, next) => {
     const { email, password } = req.body;
 
@@ -104,20 +96,19 @@ exports.forgetPassword = catchAsyncErrors(async (req, res, next) => {
 
 
 // Verify OTP
-
 exports.verifyOtp = catchAsyncErrors(async (req, res, next) => {
     const { email, otp, newPassword } = req.body;
     const user = await Owner.findOne({ email });
     if (!user) {
         return next(new ErrorHandler("Email does not exist", 400));
     }
-    const storedOtp = await User.findOne({ email, otp });
+    const storedOtp = await Otp.findOne({ email, otp });
     if (!storedOtp) {
         return next(new ErrorHandler("Invalid OTP", 400))
     }
     if (user) {
         const hashedPassword = await bcrypt.hash(newPassword, 10);
-        user.password = hashedPassword;
+        Owner.password = hashedPassword;
 
         await user.save();
         await storedOtp.deleteOne();
