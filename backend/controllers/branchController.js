@@ -1,53 +1,65 @@
 const Owner = require('../models/ownerSchema')
-const branch = require('../models/branchSchema')
+const Branch = require('../models/branchSchema')
 // const ErrorHandler = require('../utils/ErrorHandler')
 const catchAsyncErrors = require('../middleware/catchAsyncErrors')
+const mongoose = require('mongoose')
 
 exports.store = catchAsyncErrors(async (req, res, next) => {
-    
-    const {
-        branch_id,
-        name,
-        receptionists,
-        location,
-        description,
-        branchImage
-    } = req.body;
-        
-    const newBranch = new branch({
-        branch_id,
-        name,
-        receptionists,
-        location,
-        description,
-        branchImage,
-      });
-      await newBranch.save();
-      res.status(201).json({
-         message: 'Branch created successfully',
-         data: newBranch });
+    const { receptionist } = req.body;
+
+    if (!receptionist) {
+        return res.status(400).json({
+            success: false,
+            message: 'Please provide a receptionist ObjectId for the branch',
+        });
+    }
+    if (!mongoose.Types.ObjectId.isValid(receptionist)) {
+        return res.status(400).json({
+            success: false,
+            message: 'Invalid receptionist ObjectId',
+        });
+    }
+
+    const existingBranchWithReceptionist = await Branch.findOne({ receptionist });
+    if (existingBranchWithReceptionist) {
+        return res.status(400).json({
+            success: false,
+            message: 'This receptionist is already assigned to another branch',
+        });
+    }
+
+
+    const newBranch = await Branch.create(req.body);
+
+
+    res.status(201).json({
+        success: true,
+        message: 'Branch created successfully',
+        data: newBranch,
+    });
 });
 
+
 /**Get single Branch */
-exports.get = catchAsyncErrors(async (req, res, next) =>{
-    const singleBranch = await branch.findById(req.params.id);
-    if(!singleBranch)
-    {
-        return next(new ErrorHandler("Branch not found",404));
+exports.get = catchAsyncErrors(async (req, res, next) => {
+    const singleBranch = await Branch.findById(req.params.id)
+        .populate({
+            path: 'receptionist',
+            select: 'name'
+        });
+
+    if (!singleBranch) {
+        return next(new ErrorHandler("Branch not found", 404));
     }
     res.status(200).json({
-        success:true,
+        success: true,
         singleBranch
     })
 });
 
 /**Get all branches */
-exports.index = catchAsyncErrors(async (req,res,next) => {
-    const allBranches = await branch.find();
-
-    if(!allBranches){
-        return next(new ErrorHandler("Branches not found",404))
-    }
+exports.index = catchAsyncErrors(async (req, res, next) => {
+    const allBranches = await Branch.find();
     res.status(200).json({
         success: true,
         allBranches
@@ -58,10 +70,10 @@ exports.index = catchAsyncErrors(async (req,res,next) => {
 
 exports.update = catchAsyncErrors(async (req, res, next) => {
     const branchId = req.params.id;
-    const updateData = req.body; 
-    const updatedBranch = await branch.findByIdAndUpdate(branchId, updateData, {
-        new: true, 
-        runValidators: true, 
+    const updateData = req.body;
+    const updatedBranch = await Branch.findByIdAndUpdate(branchId, updateData, {
+        new: true,
+        runValidators: true,
     });
 
     if (!updatedBranch) {
@@ -79,13 +91,12 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
 
 /**Delete a branch */
 exports.destroy = catchAsyncErrors(async (req, res, next) => {
-    const removeBranch = await branch.findById(req.params.id);
-    if(!removeBranch)
-    {
-        return next(new ErrorHandler("branch not found",404));
+    const removeBranch = await Branch.findById(req.params.id);
+    if (!removeBranch) {
+        return next(new ErrorHandler("branch not found", 404));
 
     }
-    await branch.findByIdAndDelete(req.params.id);
+    await Branch.findByIdAndDelete(req.params.id);
     res.status(200).json({
         success: true,
         message: "receptionist deleted successfully!"

@@ -4,6 +4,8 @@ const dotenv = require('dotenv')
 const connectToDb = require('./utils/db')
 dotenv.config({path:'./config/config.env'})
 
+
+
 // handling uncaught errors
 process.on("uncaughtException", err => {
     console.log(`Error: ${err.message}`);

@@ -4,21 +4,17 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 const receptionistSchema = new mongoose.Schema({
-    receptionist_id: {
-        type: String,
-        unique: true,
-    },
-
     name:{
         type:String
     },
     email:{
-        type:String
+        type:String,
+        unique:true
     },
     password: {
         type:String
     },
-    confirmPasswrod: {
+    confirmPassword: {
         type : String,
     },
     phoneNumber: {
@@ -27,12 +23,11 @@ const receptionistSchema = new mongoose.Schema({
     dob:{
         type:Date
     },
-    createdAt: {
-        type: Date,
-        required: true,
-        default: Date.now
-    }
+   
 
+},
+{
+    timestamps:true
 })
 
 const Receptionist = mongoose.model('receptionist',receptionistSchema)

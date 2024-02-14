@@ -8,15 +8,15 @@ router.post('/create',store)
 
 /*Owner login route */
 
-router.post('/owner/login',login)
+router.post('/login',login)
 
 // Owner logout
-router.get('/owner/logout',logout)
+router.get('/logout',logout)
 
 // forget password
-router.post('/admin/forgetPasword',forgetPassword);
+router.post('/forgetPasword',forgetPassword);
 
 //verify otp
-router.post('/admin/verifyOtp',verifyOtp);
+router.post('/verifyOtp',verifyOtp);
 
 module.exports = router

@@ -15,20 +15,7 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
         password, firstName, lastName, phoneNumber, cnic, dateOfBirth,role } = req.body;
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const owner = await Owner.create({
-        email,
-        password: hashedPassword,
-        firstName,
-        lastName,
-        phoneNumber,
-        cnic,
-        dateOfBirth,
-        profilePicture: {
-            public_id: "This is sample public id",
-            url: "This is sample url"
-        },
-        role
-    });
+    const owner = await Owner.create({ password: hashedPassword, });
     res.status(200).json({
         success: true,
         owner,
