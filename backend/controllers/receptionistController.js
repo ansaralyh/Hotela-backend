@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const catchAsyncErrors = require('../middleware/catchAsyncErrors')
 const sendToken = require("../utils/jwtToken");
 const Receptionist = require('../models/receptionistSchema');
+const Employee = require('../models/employeeSchema')
 
 exports.store = catchAsyncErrors(async (req, res, next) => {
     const { password, confirmPassword } = req.body;
@@ -14,14 +15,14 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
             message: 'Password and confirm Password do not match',
         });
     }
-    const existingReceptionist = await Receptionist.findOne({ email: req.body.email });
+    const existingReceptionist = await Employee.findOne({ email: req.body.email });
     if (existingReceptionist) {
         return res.status(400).json({
             success: false,
             message: 'Email already exists',
         });
     }
-    const newReceptionist = await Receptionist.create(req.body);
+    const newReceptionist = await Employee.create(req.body);
 
 
     res.status(201).json({

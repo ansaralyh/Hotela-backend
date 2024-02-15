@@ -109,6 +109,7 @@ exports.verifyOtp = catchAsyncErrors(async (req, res, next) => {
     if (user) {
         const hashedPassword = await bcrypt.hash(newPassword, 10);
         Owner.password = hashedPassword;
+       
 
         await user.save();
         await storedOtp.deleteOne();

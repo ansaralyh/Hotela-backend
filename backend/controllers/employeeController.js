@@ -1,4 +1,4 @@
-// const ErrorHandler = require('../utils/ErrorHandler');
+const ErrorHandler = require('../utils/ErrorHandler');
 const bcrypt = require('bcrypt');
 const catchAsyncErrors = require('../middleware/catchAsyncErrors')
 const sendToken = require("../utils/jwtToken");
@@ -6,58 +6,27 @@ const Employee = require('../models/employeeSchema');
 
 /**Create Single Employee */
 exports.store = catchAsyncErrors(async (req, res, next) => {
-    
-    const {
-        employeeId,
-        employeeName,
-        cnic,
-        position,
-        gender,
-        contact,
-        joiningDate,
-        email,
-        maritalStatus,
-        emergencyContact,
-        city,
-        currentAddress,
-        permanentAddress,
-    } = req.body;
+    const {name,cnic,gender,type,contact,joiningDate} = req.body;
 
     
-    const newEmployee = new Employee({
-        employeeId,
-        employeeName,
-        cnic,
-        position,
-        gender,
-        contact,
-        joiningDate,
-        email,
-        maritalStatus,
-        emergencyContact,
-        city,
-        currentAddress,
-        permanentAddress,
-    });
+    if(!name || !cnic || !gender || !type || !contact || !joiningDate){
+        return next(new ErrorHandler('Fields missing'))
+    }
 
-   
-    await newEmployee.save();
-
+    const employee = await Employee.create(req.body);
     res.status(201).json({
-        success: true,
-        message: 'Employee created successfully',
-        newEmployee,
-    });
+        success:true,
+        employee
+    })
 });
 
 /**Get single employee by empID */
 
 
 exports.get = catchAsyncErrors(async (req, res, next) =>{
-    const singleEmployee = await Employee.findOne({
-        employeeId :req.params.employeeId });
+    const singleEmployee = await Employee.findById(req.params.id);
         if(!singleEmployee) {
-            return next(new ErrorHandler(`Employee with ID ${req.params.employeeId} not found`,404));
+            return next(new ErrorHandler(`Employee with ID ${req.params.id} not found`,404));
         }
 
         res.status(200).json({
@@ -81,22 +50,27 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
 /** Update employee */
 
 exports.update = catchAsyncErrors( async  (req,res,next)=> {
-    const employeeId = req.params.employeeId;
-    const updatedFields = req.body;
+    console.log(req.body)
+    const employeeId = req.params.id;
+    console.log(employeeId)
+    const updateField = req.body;
+    const updatedData = await Employee.findByIdAndUpdate(employeeId, updateField, {
+        new: true,
+        runValidators: true
+    });
 
-    const existingEmployee = await Employee.findOne({ employeeId });
-
-    if(!existingEmployee){
-        return next(new ErrorHandler("No such employee exist",404)) ;
+    if (!updatedData) {
+        return res.status(404).json({
+            success: false,
+            message: "Employee not found"
+        });
     }
-    Object.assign(existingEmployee, updatedFields);
-    await existingEmployee.save();
-
+  await updatedData.save();
     res.status(200).json({
-        success:true,
-        message:"Updated Successfully" ,
-        updatedEmployee:existingEmployee
-    })
+        success: true,
+        message: "Field updated successfully",
+        updateField
+    });
 });
 
 /**Delete an employee */
