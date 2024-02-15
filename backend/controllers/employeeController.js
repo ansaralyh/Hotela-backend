@@ -1,56 +1,72 @@
 const ErrorHandler = require('../utils/ErrorHandler');
-const bcrypt = require('bcrypt');
+var bcrypt = require('bcryptjs');
+var salt = bcrypt.genSaltSync(10);
 const catchAsyncErrors = require('../middleware/catchAsyncErrors')
 const sendToken = require("../utils/jwtToken");
-const Employee = require('../models/employeeSchema'); 
+const Employee = require('../models/employeeSchema');
 
 /**Create Single Employee */
 exports.store = catchAsyncErrors(async (req, res, next) => {
-    const {name,cnic,gender,type,contact,joiningDate} = req.body;
-
-    
-    if(!name || !cnic || !gender || !type || !contact || !joiningDate){
+    let { name, cnic, gender, type, contact, joiningDate,email,password } = req.body;
+    if (!name || !cnic || !gender || !type || !contact || !joiningDate) {
         return next(new ErrorHandler('Fields missing'))
     }
+    const employee = await Employee.findOne({ $or: [{ cnic }, { email }] });
 
-    const employee = await Employee.create(req.body);
-    res.status(201).json({
-        success:true,
-        employee
+    if(employee){
+        return next (new ErrorHandler('Employee already exists',401));
+    }
+    else{
+        const hashedPassword = await bcrypt.hash(password,salt);
+        console.log(hashedPassword)
+        req.body.password = hashedPassword;
+        const employee = await Employee.create(req.body);
+        res.status(200).json({
+            success:true,
+            messege:'Employee created successfully'
+        })
+    }
+
+
+
+  
+});
+
+
+/**Get single employee by empID */
+exports.get = catchAsyncErrors(async (req, res, next) => {
+    const singleEmployee = await Employee.findById(req.params.id);
+    if (!singleEmployee) {
+        return next(new ErrorHandler(`Employee with ID ${req.params.id} not found`, 404));
+    }
+
+    res.status(200).json({
+        success: true,
+        singleEmployee
     })
 });
 
-/**Get single employee by empID */
-
-
-exports.get = catchAsyncErrors(async (req, res, next) =>{
-    const singleEmployee = await Employee.findById(req.params.id);
-        if(!singleEmployee) {
-            return next(new ErrorHandler(`Employee with ID ${req.params.id} not found`,404));
-        }
-
-        res.status(200).json({
-            success:true,
-            singleEmployee
-        })
-});
 
 /**Get all employess */
 exports.index = catchAsyncErrors(async (req, res, next) => {
-    const allEmployees = await Employee.find();
-    if(!allEmployees)
-    {
-        return next(new ErrorHandler('Employees not found'))
+    const {type}=req.query;
+    const query={};
+    if(type){
+        query.type=type;
     }
+
+    const allEmployees = await Employee.find(query);
+    
     res.status(200).json({
-        success:true ,
-        allEmployees})
+        success: true,
+        allEmployees
+    })
 });
 
-/** Update employee */
 
-exports.update = catchAsyncErrors( async  (req,res,next)=> {
-    console.log(req.body)
+/** Update employee */
+exports.update = catchAsyncErrors(async (req, res, next) => {
+    // console.log(req.body)
     const employeeId = req.params.id;
     console.log(employeeId)
     const updateField = req.body;
@@ -65,7 +81,7 @@ exports.update = catchAsyncErrors( async  (req,res,next)=> {
             message: "Employee not found"
         });
     }
-  await updatedData.save();
+    await updatedData.save();
     res.status(200).json({
         success: true,
         message: "Field updated successfully",
@@ -73,19 +89,19 @@ exports.update = catchAsyncErrors( async  (req,res,next)=> {
     });
 });
 
-/**Delete an employee */
 
-exports.destroy = catchAsyncErrors(async(req, res, next) => {
+/**Delete an employee */
+exports.destroy = catchAsyncErrors(async (req, res, next) => {
     const employeeId = req.params.employeeId;
-    const currentEmplpoyee = await Employee.findOne({employeeId});
+    const currentEmplpoyee = await Employee.findOne({ employeeId });
     if (!currentEmplpoyee) {
-        return next(new ErrorHandler('Employee not Found',404));
+        return next(new ErrorHandler('Employee not Found', 404));
     }
-    await Employee.deleteOne({employeeId});
+    await Employee.deleteOne({ employeeId });
 
     res.status(200).json({
-        success:true,
-        message:'Employee remooved successfully'
+        success: true,
+        message: 'Employee remooved successfully'
     })
 })
 

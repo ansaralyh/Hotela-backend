@@ -1,11 +1,10 @@
 const mongoose = require('mongoose');
-const validator = require('validator');
 
 
 const employeeSchema = new mongoose.Schema({
 
     type:{
-        type:Number, //1.Manager 2.Chef, 3.Cleaner 4.Recepionist
+        type:Number, //1.Manager 2.Chef, 3.Cleaner 4.Receptionist
         
     },
     name: {
