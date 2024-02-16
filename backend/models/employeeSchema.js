@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const employeeSchema = new mongoose.Schema({
 
     type:{
-        type:Number, //1.Manager 2.Chef, 3.Cleaner 4.Receptionist
+        type:Number, //1.Manager 2.Chef, 3.Room Cleaner 4.Receptionist
         
     },
     name: {

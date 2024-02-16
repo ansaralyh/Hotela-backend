@@ -8,15 +8,15 @@ const router = express.Router();
 router.post('/create',auth,isAuthorizedRole('owner'),store);
 
 /**Get single employee */
-router.get('/get/:id',get);
+router.get('/get/:id',auth,isAuthorizedRole('owner'),get);
 
 /**Get all employees */
-router.get('/get',index);
+router.get('/get',auth,isAuthorizedRole('owner'),index);
 
 /**Update employee */
-router.put('/update/:id',update);
+router.put('/update/:id',auth,isAuthorizedRole('owner'),update);
 
 
 /**Delete employee */
-router.delete('/delete/:employeeId',destroy)
+router.delete('/delete/:id',destroy)
 module.exports = router;

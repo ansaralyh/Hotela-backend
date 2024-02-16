@@ -7,6 +7,7 @@ const Employee = require('../models/employeeSchema');
 
 /**Create Single Employee */
 exports.store = catchAsyncErrors(async (req, res, next) => {
+    
     let { name, cnic, gender, type, contact, joiningDate,email,password } = req.body;
     if (!name || !cnic || !gender || !type || !contact || !joiningDate) {
         return next(new ErrorHandler('Fields missing'))
@@ -47,6 +48,7 @@ exports.get = catchAsyncErrors(async (req, res, next) => {
 });
 
 
+
 /**Get all employess */
 exports.index = catchAsyncErrors(async (req, res, next) => {
     const {type}=req.query;
@@ -55,7 +57,7 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
         query.type=type;
     }
 
-    const allEmployees = await Employee.find(query);
+    const allEmployees = await Employee.find(query).select('-password');
     
     res.status(200).json({
         success: true,
@@ -66,7 +68,6 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
 
 /** Update employee */
 exports.update = catchAsyncErrors(async (req, res, next) => {
-    // console.log(req.body)
     const employeeId = req.params.id;
     console.log(employeeId)
     const updateField = req.body;
@@ -92,12 +93,14 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
 
 /**Delete an employee */
 exports.destroy = catchAsyncErrors(async (req, res, next) => {
-    const employeeId = req.params.employeeId;
-    const currentEmplpoyee = await Employee.findOne({ employeeId });
+    const employeeId = req.params.id;
+    
+    const currentEmplpoyee = await Employee.findByIdAndDelete( employeeId );
+    console.log(currentEmplpoyee)
     if (!currentEmplpoyee) {
         return next(new ErrorHandler('Employee not Found', 404));
     }
-    await Employee.deleteOne({ employeeId });
+   
 
     res.status(200).json({
         success: true,
