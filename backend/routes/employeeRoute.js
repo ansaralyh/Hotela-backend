@@ -11,7 +11,7 @@ router.post('/create',auth,isAuthorizedRole('owner'),store);
 router.get('/get/:id',auth,isAuthorizedRole('owner'),get);
 
 /**Get all employees */
-router.get('/get',auth,isAuthorizedRole('owner'),index);
+router.get('/index',auth,isAuthorizedRole('owner'),index);
 
 /**Update employee */
 router.put('/update/:id',auth,isAuthorizedRole('owner'),update);

@@ -4,14 +4,15 @@ var bcrypt = require('bcryptjs');
 var salt = bcrypt.genSaltSync(10);
 const catchAsyncErrors = require('../middleware/catchAsyncErrors')
 const sendToken = require("../utils/jwtToken")
-const Otp = require('../models/otp.model')
 const nodemailer = require('nodemailer')
 const crypto = require('crypto')
+// const {JWT_SECRET,JWT_EXPIRE}=require("../config/config.env")
+const jwt = require('jsonwebtoken');
 
 /** Create hotel controller*/
 exports.store = catchAsyncErrors(async (req, res, next) => {
 
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const hashedPassword = await bcrypt.hash(req.body.password, salt);
     req.body.password = hashedPassword;
     const owner = await Owner.create(req.body);
 
@@ -23,44 +24,40 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
 });
 
 /**Login Owner */
-exports.login = catchAsyncErrors(async (req, res, next) => {
-    const { email, password } = req.body;
 
+exports.login = catchAsyncErrors(async (req, res, next) => {
+    
+    const { email, password } = req.body;
+    const expiresIn = process.env.JWT_EXPIRE || '1h';
     if (!email || !password) {
         return next(new ErrorHandler("Please provide an email and password", 400));
     }
 
     const owner = await Owner.findOne({ email });
     if (!owner) {
-        return next(new ErrorHandler("Invalid email ", 401));
+        return next(new ErrorHandler("Invalid email", 401));
     }
 
-    const isPasswordMatched = await owner.comparePassword(password);
+    const isPasswordMatched = await bcrypt.compare(password, owner.password);
     if (!isPasswordMatched) {
-
-        return next(new ErrorHandler("Invalid email and password", 401));
+        return next(new ErrorHandler("Invalid password", 401));
+    }
+    else{
+        const token=await jwt.sign({id:owner._id},process.env.JWT_SECRET,{expiresIn:process.env.JWT_EXPIRE});
+        res.status(200).json({
+            success: true,
+            message: "Logged in successfully",
+            owner,
+            accessToken:token,
+          
+        });
+      
     }
 
-    res.status(200).json({
-        success:true,
-        messege:"Logged in successfully",
-    })
+    
 });
 
 
-
-//Logout
-exports.logout = catchAsyncErrors(async (req, res, next) => {
-    res.cookie("token", null, {
-        expires: new Date(Date.now()),
-        httpOnly: true
-    });
-    res.status(200).json({
-        success: true,
-        messege: "Logged out successfully",
-
-    })
-})
 // Forget password
 exports.forgetPassword = catchAsyncErrors(async (req, res, next) => {
     const { email } = req.body;
@@ -126,6 +123,7 @@ exports.verifyOtp = catchAsyncErrors(async (req, res, next) => {
     }
 });
 
+
 // Reset Password Controller
 exports.resetPassword = catchAsyncErrors(async (req, res, next) => {
     const { email, newPassword } = req.body;
@@ -135,14 +133,13 @@ exports.resetPassword = catchAsyncErrors(async (req, res, next) => {
     if (!user) {
         return next(new ErrorHandler("Email does not exist", 400));
     }
-
-    if (user.isPasswordOtpVerified) {
-        const hashedPassword = await bcrypt.hash(newPassword, salt); 
+     if (user.isPasswordOtpVerified) {
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
 
         user.password = hashedPassword;
         user.isPasswordOtpVerified = false;
-        user.forgetPasswordOtp = undefined; 
-        user.isPasswordOtpVerified = undefined;
+        user.forgetPasswordOtp = null;
+        user.isPasswordOtpVerified = null;
         await user.save();
 
         res.status(200).json({ message: 'Password reset successfully' });
