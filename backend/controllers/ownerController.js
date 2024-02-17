@@ -18,7 +18,8 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
 
     res.status(200).json({
         success: true,
-        result
+        messege:"User created successfully"
+        
     })
 
 });
@@ -31,12 +32,13 @@ exports.login = catchAsyncErrors(async (req, res, next) => {
         return next(new ErrorHandler("Please provide an email and password", 400));
     }
 
-    const result = await users.findOne({ email }).select("-password");
+    const result = await users.findOne({ email });
     if (!result) {
         return next(new ErrorHandler("Invalid credentials", 401));
     }
 
-    const isPasswordMatched = await bcrypt.compare(password, users.password);
+    const isPasswordMatched = await bcrypt.compare(password, result.password).select;
+
     if (!isPasswordMatched) {
         return next(new ErrorHandler("Invalid credentials", 401));
     }
