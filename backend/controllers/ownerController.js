@@ -1,4 +1,4 @@
-const users = require('../models/ownerSchema')
+const users = require('../models/userSchema')
 const ErrorHandler = require('../utils/ErrorHandler');
 var bcrypt = require('bcryptjs');
 var salt = bcrypt.genSaltSync(10);

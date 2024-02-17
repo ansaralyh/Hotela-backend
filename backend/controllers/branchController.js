@@ -1,41 +1,21 @@
-const Owner = require('../models/ownerSchema')
+
 const Branch = require('../models/branchSchema')
-// const ErrorHandler = require('../utils/ErrorHandler')
+const ErrorHandler = require('../utils/ErrorHandler')
 const catchAsyncErrors = require('../middleware/catchAsyncErrors')
-const mongoose = require('mongoose')
+
 
 exports.store = catchAsyncErrors(async (req, res, next) => {
-    const { receptionist } = req.body;
-
-    if (!receptionist) {
-        return res.status(400).json({
-            success: false,
-            message: 'Please provide a receptionist ObjectId for the branch',
-        });
-    }
-    if (!mongoose.Types.ObjectId.isValid(receptionist)) {
-        return res.status(400).json({
-            success: false,
-            message: 'Invalid receptionist ObjectId',
-        });
+    const { name, location,description,branchImage} = req.body;
+    if(!name || !location || !branchImage || !description) {
+        return next(new ErrorHandler("Fields missing",400))
     }
 
-    const existingBranchWithReceptionist = await Branch.findOne({ receptionist });
-    if (existingBranchWithReceptionist) {
-        return res.status(400).json({
-            success: false,
-            message: 'This receptionist is already assigned to another branch',
-        });
-    }
-
-
-    const newBranch = await Branch.create(req.body);
+    const newBranch = await Branch.create({name, location,description,branchImage,hotel_id:req.user.id});
 
 
     res.status(201).json({
-        success: true,
         message: 'Branch created successfully',
-        data: newBranch,
+        result: newBranch,
     });
 });
 
@@ -43,10 +23,7 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
 /**Get single Branch */
 exports.get = catchAsyncErrors(async (req, res, next) => {
     const singleBranch = await Branch.findById(req.params.id)
-        .populate({
-            path: 'receptionist',
-            select: 'name'
-        });
+       
 
     if (!singleBranch) {
         return next(new ErrorHandler("Branch not found", 404));
@@ -61,7 +38,7 @@ exports.get = catchAsyncErrors(async (req, res, next) => {
 exports.index = catchAsyncErrors(async (req, res, next) => {
     const allBranches = await Branch.find();
     res.status(200).json({
-        success: true,
+        messege:"Operation successfulll",
         allBranches
     })
 });
