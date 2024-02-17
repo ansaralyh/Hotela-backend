@@ -1,4 +1,4 @@
-const Room = require('../models/roomSchema');
+const Room = require('../models/roomCategorySchema.model');
 const Reservation = require('../models/reservedRoom.model');
 const catchAsyncErrors = require('../middleware/catchAsyncErrors');
 // const ErrorHandler = require('../utils/ErrorHandler');

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Counter = require('./counter.model');
+// const Counter = require('./counter.model');
 
 const customerSchema = new mongoose.Schema({
 

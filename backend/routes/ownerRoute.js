@@ -4,7 +4,7 @@ const { store, forgetPassword, verifyOtp, logout, login, resetPassword } = requi
 const router = express.Router()
 
 /**Create hotel route */
-router.post('/create', store)
+router.post('/store', store)
 
 /*Owner login route */
 
