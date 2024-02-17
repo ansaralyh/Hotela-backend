@@ -15,11 +15,11 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
     const employee = await Employee.findOne({ $or: [{ cnic }, { email }] });
 
     if(employee){
-        return next (new ErrorHandler('Employee already exists',401));
+        return next (new ErrorHandler('Employee already exists',409));
     }
     else{
         const hashedPassword = await bcrypt.hash(password,salt);
-        console.log(hashedPassword)
+        // console.log(hashedPassword)
         req.body.password = hashedPassword;
         const employee = await Employee.create(req.body);
         res.status(200).json({

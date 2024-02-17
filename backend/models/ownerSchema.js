@@ -57,21 +57,27 @@ const ownerSchema = new mongoose.Schema({
     },
     isPasswordOtpVerified :{
         type: Boolean,
+    },
+    emailVerificationOtp:{
+        type: String,
+    },
+    isEmailVerified :{
+        type: String,
     }
 });
 
-/**JWT token */
-ownerSchema.methods.getJWTToken = function () {
-    const expiresIn = process.env.JWT_EXPIRE || '1h';
+// /**JWT token */
+// ownerSchema.methods.getJWTToken = function () {
+//     const expiresIn = process.env.JWT_EXPIRE || '1h';
 
-    return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
-        expiresIn: expiresIn,
-    });
-};
+//     return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+//         expiresIn: expiresIn,
+//     });
+// };
 
 
-/**Compare passwords */
-ownerSchema.methods.comparePassword = async function (enteredPassword) {
-    return await bcrypt.compare(enteredPassword, this.password);
-};
+// /**Compare passwords */
+// ownerSchema.methods.comparePassword = async function (enteredPassword) {
+//     return await bcrypt.compare(enteredPassword, this.password);
+// };
 module.exports = mongoose.model("owner", ownerSchema)

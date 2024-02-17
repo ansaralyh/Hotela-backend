@@ -5,7 +5,7 @@ const { store, get, index, update, destroy } = require('../controllers/employeeC
 const router = express.Router();
 
 /**Create employee */
-router.post('/create',auth,isAuthorizedRole('owner'),store);
+router.post('/create',auth,isAuthorizedRole(['owner']),store);
 
 /**Get single employee */
 router.get('/get/:id',auth,isAuthorizedRole('owner'),get);

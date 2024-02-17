@@ -1,47 +1,55 @@
-const jwt = require('jsonwebtoken');
+const jsonwebtoken = require('jsonwebtoken');
 const catchAsyncErrors = require('../middleware/catchAsyncErrors')
 const sendToken = require("../utils/jwtToken");
 const ErrorHandler = require('../utils/ErrorHandler');
 const ownerSchema = require('../models/ownerSchema')
  
 // Auth middleware
-exports.auth = catchAsyncErrors(async (req, res, next) => {
-    const { token } = req.cookies;
-    // console.log(token)
 
-    if (!token) {
-        return next(new ErrorHandler("Not authorized", 401));
-    }
-
+exports.auth = async (req, res, next) => {
+  
     try {
-        const finalToken = jwt.verify(token, process.env.JWT_SECRET);
-        // console.log('Decoded Token:', finalToken);
+        const authHeader = req.headers.authorization;
+        // console.log(authHeader)
 
-        // console.log(finalToken.id)
-        // console.log('Token Expiry:', new Date(finalToken.exp * 1000));
-        req.user = await ownerSchema.findById(finalToken.id);
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return res.status(401).json({ error: 'User not authenticated', message: 'Invalid token format.' });
+        }
 
+        const token = authHeader.split(' ')[1];
+        console.log("token :",token)
+        
+        if (!token) {
+            return res.status(401).json({ error: 'User not authenticated', message: 'Token not provided.' });
+        }
+
+
+        const decoded = jsonwebtoken.verify(token, process.env.JWT_SECRET);
+        const user = await ownerSchema.findById(decoded.id);
+        if(!user){
+            return next(new ErrorHandler('User not ffound'),404)
+        }
+        req.user = user;
+        
+        // console.log("decoded",decoded);
         next();
     } catch (error) {
-        if (error.name === 'TokenExpiredError') {
-            return next(new ErrorHandler("JWT token has expired", 401));
-        } else {
-            return next(new ErrorHandler("Invalid token", 401));
-        }
+        console.error('Authentication error :', error.message);
+        return res.status(401).json({ error: 'User not authenticated', message: 'Invalid token.' });
     }
-});
+};
 
-
-exports.isAuthorizedRole = (...roles) => {
+exports.isAuthorizedRole = (roles) => {
     return (req, res, next) => {
-        // console.log('User Role:', req.user);
-        if (req.user && req.user.role && roles.includes(req.user.role)) {
+        // console.log(roles)
+        // console.log("req.user :",req.user.role)
+        if (roles.includes(req.user.role)) {
             return next();
         }
         return next(new ErrorHandler(`User is not authorized to access this resource`, 403));
     };
-    next();
 };
+
 
 
 

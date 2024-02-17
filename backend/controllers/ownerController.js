@@ -5,9 +5,9 @@ var salt = bcrypt.genSaltSync(10);
 const catchAsyncErrors = require('../middleware/catchAsyncErrors')
 const sendToken = require("../utils/jwtToken")
 const nodemailer = require('nodemailer')
-const crypto = require('crypto')
-// const {JWT_SECRET,JWT_EXPIRE}=require("../config/config.env")
+const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
+const sendEmail = require('../utils/sendEmail')
 
 /** Create hotel controller*/
 exports.store = catchAsyncErrors(async (req, res, next) => {
@@ -22,13 +22,11 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
     })
 
 });
-
 /**Login Owner */
 
 exports.login = catchAsyncErrors(async (req, res, next) => {
     
     const { email, password } = req.body;
-    const expiresIn = process.env.JWT_EXPIRE || '1h';
     if (!email || !password) {
         return next(new ErrorHandler("Please provide an email and password", 400));
     }
@@ -67,36 +65,24 @@ exports.forgetPassword = catchAsyncErrors(async (req, res, next) => {
         return next(new ErrorHandler(`User with this ${email} not found`));
     }
 
-    const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: 'ansaralyh@gmail.com',
-            pass: 'wgfu cpye unto qsht',
-        },
-    });
-
     const generatedOTP = crypto.randomBytes(3).toString('hex');
 
-    const mailOptions = {
-        from: 'ansaralyh@gmail.com',
-        to: email,
-        subject: 'Password Reset OTP',
-        text: `Your OTP is ${generatedOTP}`,
-    };
-
     try {
-        await transporter.sendMail(mailOptions);
+       
+        await sendEmail(email, 'Password Reset OTP', `Your OTP is ${generatedOTP}`);
+
+    
         user.forgetPasswordOtp = generatedOTP;
         await user.save();
 
+        
         res.status(200).json({
             success: true,
             message: 'OTP sent successfully',
             otp: generatedOTP
         });
     } catch (error) {
-        console.error('Error sending email:', error);
-        return next(new ErrorHandler('Failed to send email. Please try again later.'));
+        return next(new ErrorHandler(error.message));
     }
 });
 
