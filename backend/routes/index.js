@@ -8,7 +8,7 @@ const employeeRoutes = require('./employeeRoute');
 const customerRoutes = require('./customerRoutes');
 const reservation = require('./reservedRoom.routes');
 
-router.use("/owner",ownerRoutes)
+router.use("/users",ownerRoutes)
 router.use("/branch",branchRoutes)
 router.use("/room",roomRoutes)
 router.use("/employee",employeeRoutes)

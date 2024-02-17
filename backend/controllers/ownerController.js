@@ -1,4 +1,4 @@
-const Owner = require('../models/ownerSchema')
+const users = require('../models/ownerSchema')
 const ErrorHandler = require('../utils/ErrorHandler');
 var bcrypt = require('bcryptjs');
 var salt = bcrypt.genSaltSync(10);
@@ -14,11 +14,11 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
 
     const hashedPassword = await bcrypt.hash(req.body.password, salt);
     req.body.password = hashedPassword;
-    const owner = await Owner.create(req.body);
+    const result = await users.create(req.body);
 
     res.status(200).json({
         success: true,
-        owner
+        result
     })
 
 });
@@ -31,21 +31,21 @@ exports.login = catchAsyncErrors(async (req, res, next) => {
         return next(new ErrorHandler("Please provide an email and password", 400));
     }
 
-    const owner = await Owner.findOne({ email });
-    if (!owner) {
-        return next(new ErrorHandler("Invalid email", 401));
+    const result = await users.findOne({ email }).select("-password");
+    if (!result) {
+        return next(new ErrorHandler("Invalid credentials", 401));
     }
 
-    const isPasswordMatched = await bcrypt.compare(password, owner.password);
+    const isPasswordMatched = await bcrypt.compare(password, users.password);
     if (!isPasswordMatched) {
-        return next(new ErrorHandler("Invalid password", 401));
+        return next(new ErrorHandler("Invalid credentials", 401));
     }
     else{
-        const token=await jwt.sign({id:owner._id},process.env.JWT_SECRET,{expiresIn:process.env.JWT_EXPIRE});
+        const token=await jwt.sign({id:users._id},process.env.JWT_SECRET,{expiresIn:process.env.JWT_EXPIRE});
         res.status(200).json({
             success: true,
             message: "Logged in successfully",
-            owner,
+            result,
             accessToken:token,
           
         });
@@ -59,9 +59,9 @@ exports.login = catchAsyncErrors(async (req, res, next) => {
 // Forget password
 exports.forgetPassword = catchAsyncErrors(async (req, res, next) => {
     const { email } = req.body;
-    const user = await Owner.findOne({ email });
+    const result = await users.findOne({ email });
 
-    if (!user) {
+    if (!result) {
         return next(new ErrorHandler(`User with this ${email} not found`));
     }
 
@@ -72,7 +72,7 @@ exports.forgetPassword = catchAsyncErrors(async (req, res, next) => {
         await sendEmail(email, 'Password Reset OTP', `Your OTP is ${generatedOTP}`);
 
     
-        user.forgetPasswordOtp = generatedOTP;
+        result.forgetPasswordOtp = generatedOTP;
         await user.save();
 
         
@@ -92,16 +92,16 @@ exports.verifyOtp = catchAsyncErrors(async (req, res, next) => {
     const { email, otp } = req.body;
 
 
-    const user = await Owner.findOne({ email });
+    const result = await users.findOne({ email });
 
-    if (!user) {
+    if (!result) {
         return next(new ErrorHandler("Email does not exist", 400));
     }
 
 
-    if (user.forgetPasswordOtp === otp) {
-        user.isPasswordOtpVerified = true;
-        await user.save();
+    if (result.forgetPasswordOtp === otp) {
+        result.isPasswordOtpVerified = true;
+        await result.save();
 
         res.status(200).json({ message: 'OTP verified successfully' });
     } else {
@@ -114,19 +114,19 @@ exports.verifyOtp = catchAsyncErrors(async (req, res, next) => {
 exports.resetPassword = catchAsyncErrors(async (req, res, next) => {
     const { email, newPassword } = req.body;
 
-    const user = await Owner.findOne({ email });
+    const result = await users.findOne({ email });
 
-    if (!user) {
+    if (!result) {
         return next(new ErrorHandler("Email does not exist", 400));
     }
-     if (user.isPasswordOtpVerified) {
+     if (result.isPasswordOtpVerified) {
         const hashedPassword = await bcrypt.hash(newPassword, salt);
 
-        user.password = hashedPassword;
-        user.isPasswordOtpVerified = false;
-        user.forgetPasswordOtp = null;
-        user.isPasswordOtpVerified = null;
-        await user.save();
+        result.password = hashedPassword;
+        result.isPasswordOtpVerified = false;
+        result.forgetPasswordOtp = null;
+        result.isPasswordOtpVerified = null;
+        await result.save();
 
         res.status(200).json({ message: 'Password reset successfully' });
     } else {
