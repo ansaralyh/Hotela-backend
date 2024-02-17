@@ -3,8 +3,6 @@ const ErrorHandler = require('../utils/ErrorHandler');
 var bcrypt = require('bcryptjs');
 var salt = bcrypt.genSaltSync(10);
 const catchAsyncErrors = require('../middleware/catchAsyncErrors')
-const sendToken = require("../utils/jwtToken")
-const nodemailer = require('nodemailer')
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const sendEmail = require('../utils/sendEmail')
@@ -37,15 +35,13 @@ exports.login = catchAsyncErrors(async (req, res, next) => {
         return next(new ErrorHandler("Invalid credentials", 401));
     }
 
-    const isPasswordMatched = await bcrypt.compare(password, result.password).select;
-
+    const isPasswordMatched = await bcrypt.compare(password, result.password);
     if (!isPasswordMatched) {
         return next(new ErrorHandler("Invalid credentials", 401));
     }
     else{
-        const token=await jwt.sign({id:users._id},process.env.JWT_SECRET,{expiresIn:process.env.JWT_EXPIRE});
+        const token=await jwt.sign({id:result._id},process.env.JWT_SECRET,{expiresIn:process.env.JWT_EXPIRE});
         res.status(200).json({
-            success: true,
             message: "Logged in successfully",
             result,
             accessToken:token,

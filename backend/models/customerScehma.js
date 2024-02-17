@@ -9,24 +9,41 @@ const customerSchema = new mongoose.Schema({
     },
     cnic: {
         type: Number,
+        unique:true
 
     },
     gender: {
         type: String,
+        enum: ['male', 'female']
 
     },
-    checkIn: {
+    checkInDate: {
         type: Date,
 
     },
-    checkOut: {
+    checkOutDate: {
         type: Date,
 
-    }, email: {
+    },
+    email: {
         type: String,
         required: true,
     },
     maritalStatus: {
+        type: String,
+        enum: ["married", "single"]
+    },
+    emergencyContactNumber: {
+        type: Number
+    },
+    city: {
+        type: String,
+    },
+    currentAddress: {
+
+        type: String,
+    },
+    permanentAddress: {
         type: String,
     }
 });

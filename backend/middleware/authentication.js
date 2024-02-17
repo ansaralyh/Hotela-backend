@@ -2,7 +2,7 @@ const jsonwebtoken = require('jsonwebtoken');
 const catchAsyncErrors = require('../middleware/catchAsyncErrors')
 const sendToken = require("../utils/jwtToken");
 const ErrorHandler = require('../utils/ErrorHandler');
-const ownerSchema = require('../models/ownerSchema')
+const users = require('../models/ownerSchema')
  
 // Auth middleware
 
@@ -17,7 +17,7 @@ exports.auth = async (req, res, next) => {
         }
 
         const token = authHeader.split(' ')[1];
-        console.log("token :",token)
+        // console.log("token :",token)
         
         if (!token) {
             return res.status(401).json({ error: 'User not authenticated', message: 'Token not provided.' });
@@ -25,7 +25,9 @@ exports.auth = async (req, res, next) => {
 
 
         const decoded = jsonwebtoken.verify(token, process.env.JWT_SECRET);
-        const user = await ownerSchema.findById(decoded.id);
+        // console.log(decoded);
+        const user = await users.findById(decoded.id);
+        // console.log(user)
         if(!user){
             return next(new ErrorHandler('User not ffound'),404)
         }

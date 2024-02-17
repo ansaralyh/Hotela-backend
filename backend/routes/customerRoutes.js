@@ -1,16 +1,16 @@
 const express = require('express');
 const { store, get, index, update, destroy, deleteAllCustomers } = require('../controllers/cutomerControllers');
+const { auth, isAuthorizedRole } = require('../middleware/authentication');
 
 const router = express.Router();
 
 
-router.post('/customer/create',store)
-router.get('/customer/view/:customer_id',get);
-router.get('/customer/view',index);
-router.put('/customer/update/:customer_id',update)
-router.delete('/customer/delete/:customer_id',destroy)
+router.post('/store',auth,isAuthorizedRole('owner'), store)
+router.get('/get/:id',auth,isAuthorizedRole('owner'), get);
+router.get('/index',auth,isAuthorizedRole('owner'), index);
+router.put('/update/:id',auth,isAuthorizedRole('owner'), update)
+router.delete('/destroy/:id',auth,isAuthorizedRole('owner'), destroy)
 
-router.route('/customer/delete').delete(deleteAllCustomers)
 
 
 

@@ -1,49 +1,37 @@
 const Customer = require('../models/customerScehma');
-// const ErrorHandler = require('../utils/ErrorHandler');
-const bcrypt = require('bcrypt');
+const ErrorHandler = require('../utils/ErrorHandler');
 const catchAsyncErrors = require('../middleware/catchAsyncErrors');
-const sendToken = require('../utils/jwtToken');
+
 
 
 // Create customer
 exports.store = catchAsyncErrors(async (req, res, next) => {
-    const { customer_id, name, cnic, gender, checkIn, checkOut, otherDetails } = req.body;
+    const { name, cnic, gender, checkInDate, checkOutDate, email, emergencyContactNumber } = req.body;
 
-    try {
-        const newCustomer = new Customer({
-            customer_id,
-            name,
-            cnic,
-            gender,
-            checkIn,
-            checkOut,
-            otherDetails,
-        });
 
-        await newCustomer.save();
-
-        res.status(201).json({
-            success: true,
-            data: newCustomer,
-        });
-    } catch (error) {
-        next(new ErrorHandler(error.message, 400));
+    if (!name || !cnic || !gender || !checkInDate || !checkOutDate || !email || !emergencyContactNumber) {
+        return next(new ErrorHandler('Fields are missing', 400))
     }
+    const result = await Customer.create(req.body);
+    res.status(201).json({
+        messege:"Customer registered successfully",
+        result
+    })
 });
 
 // Get single customer by customer_id
 
 exports.get = catchAsyncErrors(async (req, res, next) => {
     try {
-        const customer = await Customer.findOne({ customer_id: req.params.customer_id });
+        const result = await Customer.findById(req.params.id);
 
-        if (!customer) {
+        if (!result) {
             return next(new ErrorHandler("No customer found with that Id", 404));
         }
 
         res.status(200).json({
-            success: true,
-            customer,
+            success:true,
+            result,
         });
     } catch (error) {
         next(new ErrorHandler(error.message, 500));
@@ -66,56 +54,39 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
 
 //Update customer details
 exports.update = catchAsyncErrors(async (req, res, next) => {
-    const customer_id = req.params.customer_id;
+    const customer_id = req.params.id;
     const updatedFields = req.body;
 
     delete updatedFields.customer_id;
 
-    const currentCustomer = await Customer.findOne({ customer_id });
+    const result = await Customer.findById(customer_id);
 
-    if (!currentCustomer) {
+    if (!result) {
         return next(new ErrorHandler(`Customer not found with this ID: ${customer_id}`));
     }
 
-    Object.assign(currentCustomer, updatedFields);
-    await currentCustomer.save();
+    Object.assign(result, updatedFields);
+    await result.save();
 
     res.status(200).json({
         success: true,
-        updatedCustomer: currentCustomer
+        updatedCustomer: result
     });
 });
 
 
 // Delete a customer by customer id
 
-exports.destroy = catchAsyncErrors(async(req,res,next)=>{
-    const customer_id = req.params.customer_id;
-    const currentCustomer = await Customer.findOne({ customer_id });
-    if (!currentCustomer) {
+exports.destroy = catchAsyncErrors(async (req, res, next) => {
+    const customer_id = req.params.id;
+    const result = await Customer.findByIdAndDelete( customer_id );
+    if (!result) {
         return next(new ErrorHandler(`Customer not found with this ID: ${customer_id}`));
     }
-    await Customer.deleteOne({customer_id});
     res.status(200).json({
-        success:true,
-        message:'Customer removed successfully',
-        deletedCustomer:currentCustomer
+        message: 'Customer removed successfully',
     })
 })
 
-// delete all customers
-exports.deleteAllCustomers = catchAsyncErrors(async (req, res, next) => {
-    const allCustomers = await Customer.find();
 
-    if (!allCustomers || allCustomers.length === 0) {
-        return next(new ErrorHandler('No customers found to delete'));
-    }
-
-    await Customer.deleteMany({});
-
-    res.status(200).json({
-        success: true,
-        message: 'All customers deleted successfully',
-    });
-});
 
