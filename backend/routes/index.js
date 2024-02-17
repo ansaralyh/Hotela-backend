@@ -13,7 +13,7 @@ router.use("/branch",branchRoutes)
 // router.use("/room",roomRoutes)
 router.use("/employee",employeeRoutes)
 router.use('/customer',customerRoutes);
-router.use('/reserve',reservation)
+// router.use('/reserve',reservation)
 
 
 module.exports = router
