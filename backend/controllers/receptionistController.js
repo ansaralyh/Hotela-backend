@@ -7,8 +7,8 @@ var salt = bcrypt.genSaltSync(10);
 
 
 exports.store = catchAsyncErrors(async (req, res, next) => {
-    const { branch_id, name, email, contact, password } = req.body;
-    if (!contact || !branch_id || !name || !email || !email || !password) {
+    const { branch_id, name, email, contact, password ,hotel_id} = req.body;
+    if (!contact || !branch_id || !name || !email || !email || !password || !hotel_id) {
         return next(new ErrorHandler('Fields missing', 400))
     }
     if (!mongoose.Types.ObjectId.isValid(branch_id)) {

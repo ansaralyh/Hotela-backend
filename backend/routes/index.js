@@ -5,12 +5,17 @@ const ownerRoutes = require('./ownerRoute');
 const branchRoutes = require('./branchRoute');
 const employeeRoutes = require('./employeeRoute');
 const customerRoutes = require('./customerRoutes');
+const categoryRoutes = require('./roomCategoryRoutes');
+const roomRoutes = require('./roomRoutes');
+const receptionistRoutes = require('./receptionistRoutes')
 
 router.use("/users",ownerRoutes)
 router.use("/branch",branchRoutes)
 router.use("/employee",employeeRoutes)
 router.use('/customer',customerRoutes);
-// router.use('/reserve',reservation)
+router.use('/category',categoryRoutes)
+router.use('/room',roomRoutes)
+router.use('/receptionist',receptionistRoutes)
 
 
 module.exports = router

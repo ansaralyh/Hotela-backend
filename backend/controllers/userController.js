@@ -16,15 +16,15 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
 
     res.status(200).json({
         success: true,
-        messege:"User created successfully"
-        
+        messege: "User created successfully"
+
     })
 
 });
-/**Login Owner */
 
+/**Login Owner */
 exports.login = catchAsyncErrors(async (req, res, next) => {
-    
+
     const { email, password } = req.body;
     if (!email || !password) {
         return next(new ErrorHandler("Please provide an email and password", 400));
@@ -39,18 +39,33 @@ exports.login = catchAsyncErrors(async (req, res, next) => {
     if (!isPasswordMatched) {
         return next(new ErrorHandler("Invalid credentials", 401));
     }
-    else{
-        const token=await jwt.sign({id:result._id},process.env.JWT_SECRET,{expiresIn:process.env.JWT_EXPIRE});
-        res.status(200).json({
-            message: "Logged in successfully",
-            result,
-            accessToken:token,
-          
-        });
-      
+    else {
+        const token = await jwt.sign({ id: result._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE });
+        if (result.role === 'receptionist') {
+            const hotel = await users.findById(result.hotel_id);
+            res.status(200).json({
+                message: "Logged in successfully",
+                result: {
+                    receptionist: result,
+                    hotel
+                },
+                accessToken: token,
+
+            });
+        } else if (result.role === 'owner') {
+            res.status(200).json({
+                message: "Logged in successfully",
+                result,
+                accessToken: token,
+
+            });
+        } else {
+            return next(new ErrorHandler('Invalid role'))
+        }
+
     }
 
-    
+
 });
 
 
@@ -66,14 +81,14 @@ exports.forgetPassword = catchAsyncErrors(async (req, res, next) => {
     const generatedOTP = crypto.randomBytes(3).toString('hex');
 
     try {
-       
+
         await sendEmail(email, 'Password Reset OTP', `Your OTP is ${generatedOTP}`);
 
-    
+
         result.forgetPasswordOtp = generatedOTP;
         await user.save();
 
-        
+
         res.status(200).json({
             success: true,
             message: 'OTP sent successfully',
@@ -117,7 +132,7 @@ exports.resetPassword = catchAsyncErrors(async (req, res, next) => {
     if (!result) {
         return next(new ErrorHandler("Email does not exist", 400));
     }
-     if (result.isPasswordOtpVerified) {
+    if (result.isPasswordOtpVerified) {
         const hashedPassword = await bcrypt.hash(newPassword, salt);
 
         result.password = hashedPassword;

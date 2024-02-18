@@ -2,6 +2,9 @@ const mongoose = require('mongoose');
 
 
 const ownerSchema = new mongoose.Schema({
+    hotel_id:{
+        type:String
+    },
     email: {
         type: String,
         unique: true,

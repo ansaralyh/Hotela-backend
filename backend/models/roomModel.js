@@ -1,0 +1,23 @@
+const mongoose = require('mongoose');
+const roomSchema = new mongoose.Schema({
+    room_category:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Category"
+    },
+    room_number:{
+        type:Number,
+    },
+    image:{
+        type:String,
+    },
+    hotel_id:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:"users"
+    },
+    isReserved:{
+        type:Number, // 0 for available and 1 for reserved
+        default:0
+    }
+});
+
+module.exports = mongoose.model('Room',roomSchema);
