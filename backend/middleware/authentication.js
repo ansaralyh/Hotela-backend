@@ -23,10 +23,10 @@ exports.auth = async (req, res, next) => {
             return res.status(401).json({ error: 'User not authenticated', message: 'Token not provided.' });
         }
 
-        console.log(process.env.JWT_SECRET,token)
+        // console.log(process.env.JWT_SECRET,token)
 
         const decoded = jsonwebtoken.verify(token, process.env.JWT_SECRET);
-        console.log(decoded);
+        // console.log(decoded);
         const user = await users.findById(decoded.id);
         // console.log(user)
         if(!user){
