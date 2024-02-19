@@ -19,7 +19,7 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
 
 exports.index = catchAsyncErrors(async (req, res, next) => {
 
-    const categories = await Category.find({ hotel_id:req.body.hotel_id})
+    const categories = await Category.find({ hotel_id:req.query.hotel_id})
 
     res.status(200).json({
         message: "Operation Successfull",
