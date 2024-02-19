@@ -47,8 +47,7 @@ exports.login = catchAsyncErrors(async (req, res, next) => {
             res.status(200).json({
                 message: "Logged in successfully",
                 result: {
-                    receptionist: result,
-                    hotel
+                    receptionist: result
                 },
                 accessToken: token,
 
