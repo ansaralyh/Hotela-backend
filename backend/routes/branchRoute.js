@@ -3,7 +3,7 @@ const {auth, isAuthorizedRole} = require('../middleware/authentication');
 const { store, get, index, update, destroy } = require('../controllers/branchController');
 const router = express.Router()
 
-router.post('/store',auth,isAuthorizedRole("owner","receptionist"),store);
+router.post('/store',auth,isAuthorizedRole(["owner","receptionist"]),store);
 
 /**Single branch route */
 router.get("/get/:id",auth,isAuthorizedRole("owner","receptionist"),get);

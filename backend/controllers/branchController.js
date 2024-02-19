@@ -5,12 +5,12 @@ const catchAsyncErrors = require('../middleware/catchAsyncErrors')
 
 
 exports.store = catchAsyncErrors(async (req, res, next) => {
-    const { name, location,description,branchImage} = req.body;
-    if(!name || !location || !branchImage || !description) {
+    const { name, location,description,branchImage,hotel_id} = req.body;
+    if(!name || !location || !branchImage || !description || !hotel_id) {
         return next(new ErrorHandler("Fields missing",400))
     }
 
-    const newBranch = await Branch.create({name, location,description,branchImage,hotel_id:req.user.id});
+    const newBranch = await Branch.create({name, location,description,branchImage,hotel_id});
 
 
     res.status(201).json({

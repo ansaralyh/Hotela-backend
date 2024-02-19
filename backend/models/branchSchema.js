@@ -15,7 +15,7 @@ const branchSchema = new mongoose.Schema({
     branchImage: {
         type: String
     },
-    hotel_id:{
+    hotel_id:{ // image
         type:mongoose.Schema.Types.ObjectId,
         ref:"Hotel"
     }
