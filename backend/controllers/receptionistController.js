@@ -20,7 +20,7 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
 
     const hashedPassword = await bcrypt.hash(req.body.password, salt);
     req.body.password = hashedPassword;
-    const newReceptionist = await users.create({ branch_id, name, email, password: hashedPassword, contact, role: "receptionist", hotel_id: req.user.id });
+    const newReceptionist = await users.create({ branch_id, name, email, password: hashedPassword, contact, role: "receptionist", hotel_id});
 
     res.status(200).json({
         messege: "Oeration successful",
