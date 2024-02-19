@@ -41,20 +41,26 @@ exports.login = catchAsyncErrors(async (req, res, next) => {
         return next(new ErrorHandler("Invalid credentials", 401));
     }
     else {
-        const token = await jwt.sign({ id: result._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE });
-       
-            const hotel = await Hotel.findById(result.hotel_id);
-            res.status(200).json({
-                message: "Logged in successfully",
-                result: {
-                    receptionist: result
-                },
-                accessToken: token,
+        let token = "";
+        if (result.role === 'receptionist') {
+            token =  jwt.sign({ id: result._id, hotel_id: result.hotel_id._id, branch_id: result.branch_id._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE });
+        } else {
+            token =  jwt.sign({ id: result._id, hotel_id: result.hotel_id._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE });
+        }
 
-            });
-    
-           
-       
+
+        const hotel = await Hotel.findById(result.hotel_id);
+        res.status(200).json({
+            message: "Logged in successfully",
+            result: {
+                receptionist: result
+            },
+            accessToken: token,
+
+        });
+
+
+
 
     }
 

@@ -5,11 +5,11 @@ const Category = require('../models/roomCategorySchema')
 
 exports.store = catchAsyncErrors(async (req, res, next) => {
 
-    const { cost, name, occupancy, hotel_id, ammenities } = req.body;
-    if (!cost || !name || !occupancy || !hotel_id || !ammenities) {
+    const { cost, name, occupancy, ammenities } = req.body;
+    if (!cost || !name || !occupancy  || !ammenities) {
         return next(ErrorHandler("Fields missing"), 400)
     }
-    const result = await Category.create({ cost, name, occupancy, hotel_id, ammenities });
+    const result = await Category.create({ cost, name, occupancy, hotel_id:req.user.hotel_id, ammenities });
 
     res.status(201).json({
         message: "Operation Successfull",
@@ -19,7 +19,7 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
 
 exports.index = catchAsyncErrors(async (req, res, next) => {
 
-    const categories = await Category.find({ hotel_id:req.query.hotel_id})
+    const categories = await Category.find({ hotel_id:req.user.hotel_id})
 
     res.status(200).json({
         message: "Operation Successfull",
