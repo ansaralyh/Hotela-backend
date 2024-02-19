@@ -18,13 +18,18 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
 exports.index = catchAsyncErrors(async (req, res, next) =>{
     const {isReserved}=req.query;
     const query={};
-    query.hotel_id = req.body.hotel_id;
+    
+    if(!req.query.hotel_id){
+        return next(ErrorHandler("Please Provide hotel id",400))
+    }
+    query.hotel_id = req.query.hotel_id;
     if(isReserved){
         query.isReserved=isReserved;
     }
+    // console.log(cate)
     const rooms = await Room.find(query).populate("room_category");
     res.status(200).json({
-        messege:"Rooms fetched",
+        messege:"Operation Successfull",
         result:rooms
     })
 })
