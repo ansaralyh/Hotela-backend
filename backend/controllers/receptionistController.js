@@ -7,7 +7,7 @@ var salt = bcrypt.genSaltSync(10);
 
 
 exports.store = catchAsyncErrors(async (req, res, next) => {
-    const { branch_id, name, email, contact, password ,hotel_id} = req.body;
+    const { branch_id, name, email, contact, password, hotel_id } = req.body;
     if (!contact || !branch_id || !name || !email || !email || !password || !hotel_id) {
         return next(new ErrorHandler('Fields missing', 400))
     }
@@ -20,12 +20,21 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
 
     const hashedPassword = await bcrypt.hash(req.body.password, salt);
     req.body.password = hashedPassword;
-    const newReceptionist = await users.create({ branch_id, name, email, password:hashedPassword, contact, role: "receptionist", hotel_id: req.user.id });
-  
+    const newReceptionist = await users.create({ branch_id, name, email, password: hashedPassword, contact, role: "receptionist", hotel_id: req.user.id });
+
     res.status(200).json({
         messege: "Oeration successful",
         result: newReceptionist
     })
 
 
+});
+
+//Get all receptionist
+exports.index = catchAsyncErrors(async (req, res, next) => {
+    const receptionist = await users.find({ role: 'receptionist' });
+    res.status(200).json({
+        messege:"Operation successfull",
+        result: receptionist
+    })
 })

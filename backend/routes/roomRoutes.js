@@ -5,4 +5,5 @@ const router = express.Router();
 
 router.post('/store',auth,isAuthorizedRole(['owner','receptionist']),store)
 
+
 module.exports = router
