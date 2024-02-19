@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
 
 
-const ownerSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
     hotel_id:{
-        type:String
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Hotel"
     },
     email: {
         type: String,
@@ -52,4 +53,4 @@ const ownerSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model("users", ownerSchema)
+module.exports = mongoose.model("users", userSchema)

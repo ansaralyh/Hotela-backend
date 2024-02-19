@@ -12,7 +12,7 @@ const roomSchema = new mongoose.Schema({
     },
     hotel_id:{
         type: mongoose.Schema.Types.ObjectId,
-        ref:"users"
+        ref:"Hotel"
     },
     isReserved:{
         type:Number, // 0 for available and 1 for reserved

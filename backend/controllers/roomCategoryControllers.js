@@ -9,21 +9,21 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
     if (!cost || !name || !occupancy || !hotel_id || !ammenities) {
         return next(ErrorHandler("Fields missing"), 400)
     }
-    const result = await Category.create({ cost, name, occupancy, hotel_id: req.user.id, ammenities });
+    const result = await Category.create({ cost, name, occupancy, hotel_id, ammenities });
 
     res.status(201).json({
         message: "Operation Successfull",
         result
     })
-})
+})  
 
 exports.index = catchAsyncErrors(async (req, res, next) => {
-    
-    const categories = await Category.find({ hotel_id:req.user.id })
+
+    const categories = await Category.find({ hotel_id:req.body.hotel_id})
 
     res.status(200).json({
         message: "Operation Successfull",
         result: categories
     })
 
-})
+});
