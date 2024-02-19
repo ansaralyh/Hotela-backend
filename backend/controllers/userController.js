@@ -6,6 +6,7 @@ const catchAsyncErrors = require('../middleware/catchAsyncErrors')
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const sendEmail = require('../utils/sendEmail')
+const Hotel = require('../models/hotelSchema')
 
 /** Create hotel controller*/
 exports.store = catchAsyncErrors(async (req, res, next) => {
@@ -41,8 +42,8 @@ exports.login = catchAsyncErrors(async (req, res, next) => {
     }
     else {
         const token = await jwt.sign({ id: result._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE });
-        if (result.role === 'receptionist') {
-            const hotel = await users.findById(result.hotel_id);
+       
+            const hotel = await Hotel.findById(result.hotel_id);
             res.status(200).json({
                 message: "Logged in successfully",
                 result: {
@@ -52,16 +53,9 @@ exports.login = catchAsyncErrors(async (req, res, next) => {
                 accessToken: token,
 
             });
-        } else if (result.role === 'owner') {
-            res.status(200).json({
-                message: "Logged in successfully",
-                result,
-                accessToken: token,
-
-            });
-        } else {
-            return next(new ErrorHandler('Invalid role'))
-        }
+    
+           
+       
 
     }
 

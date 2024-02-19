@@ -6,10 +6,10 @@ const catchAsyncErrors = require('../middleware/catchAsyncErrors');
 
 // Create customer
 exports.store = catchAsyncErrors(async (req, res, next) => {
-    const { name, cnic, gender, checkInDate, checkOutDate, email, emergencyContactNumber } = req.body;
+    const { name, cnic, gender, email, emergencyContactNumber,hotel_id,branch_id} = req.body;
 
 
-    if (!name || !cnic || !gender || !checkInDate || !checkOutDate || !email || !emergencyContactNumber) {
+    if (!name || !cnic || !gender || !email || !emergencyContactNumber || !hotel_id || !branch_id) {
         return next(new ErrorHandler('Fields are missing', 400))
     }
     const result = await Customer.create(req.body);
@@ -23,7 +23,7 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
 
 exports.get = catchAsyncErrors(async (req, res, next) => {
     try {
-        const result = await Customer.findById(req.params.id);
+        const result = await Customer.findById(req.params.id).populate('hotel_id').populate('branch_id');
 
         if (!result) {
             return next(new ErrorHandler("No customer found with that Id", 404));

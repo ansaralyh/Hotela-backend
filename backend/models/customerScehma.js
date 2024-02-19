@@ -17,14 +17,7 @@ const customerSchema = new mongoose.Schema({
         enum: ['male', 'female']
 
     },
-    checkInDate: {
-        type: Date,
-
-    },
-    checkOutDate: {
-        type: Date,
-
-    },
+   
     email: {
         type: String,
         required: true,
@@ -45,6 +38,16 @@ const customerSchema = new mongoose.Schema({
     },
     permanentAddress: {
         type: String,
+    }
+    ,
+    hotel_id:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Hotel"
+    },
+    branch_id:{
+
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Branch"
     }
 });
 
