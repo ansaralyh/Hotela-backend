@@ -16,10 +16,15 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
 
 //Get all rooms along with associated room category details
 exports.index = catchAsyncErrors(async (req, res, next) =>{
-    const {hotel_id} = req.body;
-    const rooms = await Room.find({hotel_id}).populate("room_category");
+    const {isReserved}=req.query;
+    const query={};
+    query.hotel_id = req.body.hotel_id;
+    if(isReserved){
+        query.isReserved=isReserved;
+    }
+    const rooms = await Room.find(query).populate("room_category");
     res.status(200).json({
-        messege:"Romms fetched",
+        messege:"Rooms fetched",
         result:rooms
     })
 })

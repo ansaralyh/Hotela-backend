@@ -17,7 +17,7 @@ const branchSchema = new mongoose.Schema({
     },
     hotel_id:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:"users"
+        ref:"Hotel"
     }
 }, 
 {
