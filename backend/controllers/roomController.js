@@ -1,20 +1,45 @@
 const ErrorHandler = require('../utils/ErrorHandler');
 const catchAsyncErrors = require('../middleware/catchAsyncErrors');
 const Room = require('../models/roomModel')
+const { uploadFile } = require("../utils/uploadFiles")
+const path = require("path")
+const fs = require('fs')
 
 exports.store = catchAsyncErrors(async (req, res, next) => {
-    const { room_category, room_number, image } = req.body;
-    if (!room_category || !room_number || !image ) {
+    const { room_category, room_number } = req.body;
+    const { image } = req.files;
+    const uploadFolderPath = path.join(__dirname, "../uploads");
+
+    if (image) {
+        if (!fs.existsSync(uploadFolderPath)) {
+            fs.mkdirSync(uploadFolderPath, { recursive: true });
+        }
+        const uploadedFile = await uploadFile(
+            image,
+            uploadFolderPath
+        );
+        console.log(uploadedFile);
+        if (uploadedFile) {
+            // Construct the URL for the uploaded image
+            const imageUrl = `${req.protocol}://${req.get("host")}/${uploadedFile}`;
+            req.body.image = imageUrl; // Assign the image URL to req.body.image
+        }
+    }
+
+    if (!room_category || !room_number || !image) {
         return next(new ErrorHandler('Fields missing', 400))
     };
-    const result = await Room.create({ room_category, room_number, image, hotel_id:req.user.hotel_id });
+
+    const result = await Room.create({ room_category, room_number, image: req.body.image, hotel_id: req.user.hotel_id });
     res.status(201).json({
-        message: "Operation Successfull",
+        message: "Operation Successful",
         result
-    })
+    });
 });
 
-//Get all rooms along with associated room category details
+
+
+//Get all rooms 
 exports.index = catchAsyncErrors(async (req, res, next) => {
     const { isReserved } = req.query;
     const query = {};
@@ -26,15 +51,15 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
     if (isReserved) {
         query.isReserved = isReserved;
     }
-    const rooms = await Room.find(query).populate("room_category");
+    const rooms = await Room.find(query)
+        .populate("room_category");
     res.status(200).json({
         messege: "Operation Successfull",
         result: rooms
     })
 })
 
-//function to resrve a room
-
+//function to find a room
 exports.get = catchAsyncErrors(async (req, res, next) => {
     const room = await Room.findById(req.params.id);
     if (!room) {
@@ -48,7 +73,6 @@ exports.get = catchAsyncErrors(async (req, res, next) => {
 })
 
 //Function to reserve a room
-
 exports.update = catchAsyncErrors(async (req, res, next) => {
 
     const room = await Room.findById(req.params.id);
@@ -63,7 +87,7 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
     res.status(200).json({
         messege: "Room reserved successfully",
 
-        result:room
+        result: room
 
     })
 

@@ -7,11 +7,9 @@ const roomSchema = new mongoose.Schema({
     room_number: {
         type: Number,
     },
-    images: [
-        {
-            type: String
-        }
-    ],
+    image: {
+        type:String
+    },
     hotel_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Hotel"

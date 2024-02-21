@@ -2,10 +2,11 @@
 const Branch = require('../models/branchSchema')
 const ErrorHandler = require('../utils/ErrorHandler')
 const catchAsyncErrors = require('../middleware/catchAsyncErrors')
-
+const fs = require('fs');
 
 exports.store = catchAsyncErrors(async (req, res, next) => {
     const { name, location,description,branchImage,hotel_id} = req.body;
+
     if(!name || !location || !branchImage || !description || !hotel_id) {
         return next(new ErrorHandler("Fields missing",400))
     }
@@ -76,6 +77,6 @@ exports.destroy = catchAsyncErrors(async (req, res, next) => {
     await Branch.findByIdAndDelete(req.params.id);
     res.status(200).json({
         success: true,
-        message: "receptionist deleted successfully!"
+        message: "branch deleted successfully!"
     });
 })

@@ -12,17 +12,19 @@ const branchSchema = new mongoose.Schema({
     description: {
         type: String,
     },
-    branchImage: {
-        type: String
-    },
-    hotel_id:{ // image
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"Hotel"
+    image: [
+        {
+            type: String,
+        }
+    ],
+    hotel_id: { 
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Hotel"
     }
-}, 
-{
-    timestamps: true
-});
+},
+    {
+        timestamps: true
+    });
 
 
 

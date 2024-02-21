@@ -10,10 +10,9 @@ router.post('/',auth,isAuthorizedRole(['owner','receptionist']),store)
 router.get('/',auth,isAuthorizedRole(['owner','receptionist']),index)
 
 //get single room
-
 router.get('/:id',auth,isAuthorizedRole(['owner','receptionist']),get)
 
 // room reservation route
+router.put('/:id',auth,isAuthorizedRole(['owner','receptionist']),update);
 
-router.put('/:id',auth,isAuthorizedRole(['owner','receptionist']),update)
 module.exports = router

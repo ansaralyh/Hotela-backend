@@ -37,4 +37,46 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
         messege:"Operation successfull",
         result: receptionist
     })
+});
+
+//Get single receptionist
+exports.get = catchAsyncErrors(async (req,res, next) =>{
+    const receptionist = await users.findById(req.params.id);
+    if(!receptionist){
+        return next(new ErrorHandler('receptionist', 404))
+    }
+    res.status(200).json({
+        messege:'Operation successful!',
+        result:receptionist
+    })
+})
+
+/**update receptionist */
+
+exports.update = catchAsyncErrors(async (req, res, next) => {
+    const receptionist = await users.findByIdAndUpdate(req.params.id,req.body,{
+        new:true,
+        runValidators:true
+    })
+    if(!receptionist){
+        return next(new ErrorHandler('receptionist', 404))
+    }
+    res.status(200).json({
+        messege:'Operation successful!',
+        result:receptionist
+    })
+})
+
+
+// delete  a receptionist
+
+exports.destroy = catchAsyncErrors(async(req,res,next) => {
+    const receptionist = await users.findByIdAndDelete(req.params.id);
+    if(!receptionist) {
+        return next(new ErrorHandler('receptionist not found',404))
+    }
+    res.status(200).json({
+        success: true,
+        message: "Operation successfully!"
+    });
 })

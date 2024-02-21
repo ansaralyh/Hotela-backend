@@ -5,18 +5,17 @@ const { store, get, index, update, destroy } = require('../controllers/employeeC
 const router = express.Router();
 
 /**Create employee */
-router.post('/crate',auth,isAuthorizedRole(['owner']),store);
+router.post('/',auth,isAuthorizedRole(['owner','receptionist']),store);
 
 /**Get single employee */
-router.get('/:id',auth,isAuthorizedRole(['owner']),get);
+router.get('/:id',auth,isAuthorizedRole(['owner','receptionist']),get);
 
 /**Get all employees */
-router.get('/',auth,isAuthorizedRole(['owner']),index);
+router.get('/',auth,isAuthorizedRole(['owner','receptionist']),index);
 
 /**Update employee */
-router.put('/:id',auth,isAuthorizedRole(['owner']),update);
-
+router.put('/:id',auth,isAuthorizedRole(['owner','receptionist']),update);
 
 /**Delete employee */
-router.delete('/delete/:id',destroy)
+router.delete('/:id',auth,isAuthorizedRole(['owner','receptionist']),destroy)
 module.exports = router;
