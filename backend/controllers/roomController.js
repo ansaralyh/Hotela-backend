@@ -14,16 +14,11 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
         if (!fs.existsSync(uploadFolderPath)) {
             fs.mkdirSync(uploadFolderPath, { recursive: true });
         }
-        const uploadedFile = await uploadFile(
-            image,
-            uploadFolderPath
-        );
-        console.log(uploadedFile);
-        if (uploadedFile) {
-            // Construct the URL for the uploaded image
-            const imageUrl = `${req.protocol}://${req.get("host")}/${uploadedFile}`;
-            req.body.image = imageUrl; // Assign the image URL to req.body.image
-        }
+        const fileName = image.name; 
+        const imagePath = path.join(uploadFolderPath, fileName); 
+        await image.mv(imagePath); 
+        const imageUrl = `${req.protocol}://${req.get("host")}/${fileName}`; 
+        req.body.image = imageUrl; 
     }
 
     if (!room_category || !room_number || !image) {
@@ -36,7 +31,6 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
         result
     });
 });
-
 
 
 //Get all rooms 

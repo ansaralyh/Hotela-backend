@@ -30,7 +30,7 @@ const deleteFile = async (uploadFolderPath, profileImage) => {
     }
   } catch (error) {
     console.error("Error deleting file:", error);
-    throw error; // Rethrow the error for the caller to handle
+    throw error; 
   }
 };
 
