@@ -6,9 +6,10 @@ const roomSchema = new mongoose.Schema({
     },
     room_number: {
         type: Number,
+        unique: true
     },
     image: {
-        type:String
+        type: String,
     },
     hotel_id: {
         type: mongoose.Schema.Types.ObjectId,

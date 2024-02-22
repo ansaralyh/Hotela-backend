@@ -5,11 +5,11 @@ const { uploadFile } = require("../utils/uploadFiles")
 const path = require("path")
 const fs = require('fs')
 
+
 exports.store = catchAsyncErrors(async (req, res, next) => {
     const { room_category, room_number } = req.body;
     const { image } = req.files;
-    const uploadFolderPath = path.join(__dirname, "../uploads");
-
+    const uploadFolderPath = path.join(__dirname, "../uploads/room_images");
     if (image) {
         if (!fs.existsSync(uploadFolderPath)) {
             fs.mkdirSync(uploadFolderPath, { recursive: true });
@@ -31,6 +31,7 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
         result
     });
 });
+
 
 
 //Get all rooms 

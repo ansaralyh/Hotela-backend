@@ -18,7 +18,7 @@ app.use(cors("*"));
 app.use(fileUpload());
 
 // Serve static files from the 'uploads' directory
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+app.use(express.static("uploads"))
 
 // Routes
 app.use('/api/v1', adminRoutes );

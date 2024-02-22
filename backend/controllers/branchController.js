@@ -3,15 +3,30 @@ const Branch = require('../models/branchSchema')
 const ErrorHandler = require('../utils/ErrorHandler')
 const catchAsyncErrors = require('../middleware/catchAsyncErrors')
 const fs = require('fs');
+const { uploadFile } = require("../utils/uploadFiles")
+const path = require("path")
 
 exports.store = catchAsyncErrors(async (req, res, next) => {
-    const { name, location,description,branchImage,hotel_id} = req.body;
+    const { name, location,description,hotel_id} = req.body;
 
-    if(!name || !location || !branchImage || !description || !hotel_id) {
+    const {image} = req.files;
+    const uploadFolderPath = path.join(__dirname, "../uploads/branch_image");
+    if(image) {
+        if (!fs.existsSync(uploadFolderPath)) {
+            fs.mkdirSync(uploadFolderPath, { recursive: true });
+        }
+        const fileName = image.name;
+        const imagePath = path.join(uploadFolderPath,fileName);
+        await image.mv(imagePath);
+        const imageUrl = `${req.protocol}://${req.get("host")}/${fileName}`; 
+        req.body.image = imageUrl; 
+    }
+
+    if(!name || !location || !image || !description || !hotel_id) {
         return next(new ErrorHandler("Fields missing",400))
     }
 
-    const newBranch = await Branch.create({name, location,description,branchImage,hotel_id});
+    const newBranch = await Branch.create({name, location,description,image:req.body.image,hotel_id});
 
 
     res.status(201).json({
