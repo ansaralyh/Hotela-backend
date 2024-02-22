@@ -3,9 +3,9 @@ const mongoose = require('mongoose');
 
 const employeeSchema = new mongoose.Schema({
 
-    type:{
-        type:Number, //1.Manager 2.Chef, 3.Room Cleaner 4.Receptionist
-        
+    type: {
+        type: Number, //1.Manager 2.Chef, 3.Room Cleaner 
+
     },
     name: {
         type: String,
@@ -25,7 +25,7 @@ const employeeSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        
+
     },
     maritalStatus: {
         type: String,
@@ -38,19 +38,25 @@ const employeeSchema = new mongoose.Schema({
     },
     currentAddress: {
         type: String,
-        
+
     },
     permanentAddress: {
         type: String,
-        
+
     },
-    password:{
-        type:String
+    
+    dob: {
+        type: Date
     },
-    dob:{
-        type:Date
+    hotel_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Hotel"
     },
-   
+    branch_id: {
+
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Branch"
+    }
 
 
 

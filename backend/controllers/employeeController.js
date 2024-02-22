@@ -2,33 +2,24 @@ const ErrorHandler = require('../utils/ErrorHandler');
 var bcrypt = require('bcryptjs');
 var salt = bcrypt.genSaltSync(10);
 const catchAsyncErrors = require('../middleware/catchAsyncErrors')
-const sendToken = require("../utils/jwtToken");
 const Employee = require('../models/employeeSchema');
+const { request } = require('express');
 
 /**Create Single Employee */
 exports.store = catchAsyncErrors(async (req, res, next) => {
     
-    let { name, cnic, gender, type, contact, joiningDate,email,password } = req.body;
-    if (!name || !cnic || !gender || !type || !contact || !joiningDate) {
-        return next(new ErrorHandler('Fields missing'))
-    }
-    const employee = await Employee.findOne({ $or: [{ cnic }, { email }] });
+   
+    const {type,name,cnic,gender,contact,joiningDate,email,emergencyContact,hotel_id,branch_id} = req.body;
 
-    if(employee){
-        return next (new ErrorHandler('Employee already exists',409));
-    }
-    else{
-        const hashedPassword = await bcrypt.hash(password,salt);
-        // console.log(hashedPassword)
-        req.body.password = hashedPassword;
-        const employee = await Employee.create(req.body);
-        res.status(200).json({
-            success:true,
-            messege:'Employee created successfully'
-        })
+    if(!type || !name || !cnic || !gender || !contact || !joiningDate || !email || !emergencyContact || !hotel_id || !branch_id){
+        return next(new ErrorHandler('Fields missing',400))
     }
 
-
+    const employee = await Employee.create({type,name,cnic,gender,contact,joiningDate,emergencyContact,branch_id,hotel_id:req.body.hotel_id});
+    res.status(200).json({
+        messege:"Operation successful",
+        result: employee
+    })
 
   
 });
@@ -42,8 +33,8 @@ exports.get = catchAsyncErrors(async (req, res, next) => {
     }
 
     res.status(200).json({
-        success: true,
-        singleEmployee
+        messege:"Operation successful",
+        result:singleEmployee
     })
 });
 
@@ -51,17 +42,19 @@ exports.get = catchAsyncErrors(async (req, res, next) => {
 
 /**Get all employess */
 exports.index = catchAsyncErrors(async (req, res, next) => {
+    
     const {type}=req.query;
     const query={};
     if(type){
         query.type=type;
     }
 
-    const allEmployees = await Employee.find(query).select('-password');
+    const allEmployees = await Employee.find(query)
+    // console.log(query);
     
     res.status(200).json({
-        success: true,
-        allEmployees
+        messege:"Operation  successful",
+       result: allEmployees
     })
 });
 
@@ -84,9 +77,8 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
     }
     await updatedData.save();
     res.status(200).json({
-        success: true,
-        message: "Field updated successfully",
-        updateField
+        message: "Operation successfully",
+        result:updateField
     });
 });
 
@@ -103,8 +95,7 @@ exports.destroy = catchAsyncErrors(async (req, res, next) => {
    
 
     res.status(200).json({
-        success: true,
-        message: 'Employee remooved successfully'
+        message: 'Operation successfully'
     })
 })
 

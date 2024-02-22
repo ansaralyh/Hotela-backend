@@ -42,7 +42,10 @@ exports.get = catchAsyncErrors(async (req, res, next) => {
 // Get all customers
 
 exports.index = catchAsyncErrors(async (req, res, next) => {
-    const allCustomers = await Customer.find();
+    
+    const accessTokenBranchId = req.user.branch_id
+    const allCustomers = await Customer.find({branch_id:accessTokenBranchId});
+    
     if (!allCustomers) {
         return next(new ErrorHandler('Customers not found'));
     }
