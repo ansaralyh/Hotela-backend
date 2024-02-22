@@ -6,7 +6,6 @@ const bodyParser = require('body-parser');
 const fileUpload  = require('express-fileupload');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
-const path = require('path');
 
 app.use(express.json());
 app.use(bodyParser.json());
@@ -18,7 +17,8 @@ app.use(cors("*"));
 app.use(fileUpload());
 
 // Serve static files from the 'uploads' directory
-app.use(express.static("uploads"))
+app.use(express.static("uploads/branch_image"))
+app.use(express.static("uploads/room_images"))
 
 // Routes
 app.use('/api/v1', adminRoutes );
