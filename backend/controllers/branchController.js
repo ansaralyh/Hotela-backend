@@ -1,4 +1,3 @@
-
 const Branch = require('../models/branchSchema')
 const ErrorHandler = require('../utils/ErrorHandler')
 const catchAsyncErrors = require('../middleware/catchAsyncErrors')

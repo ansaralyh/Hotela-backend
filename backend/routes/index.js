@@ -9,7 +9,8 @@ const categoryRoutes = require('./roomCategoryRoutes');
 const roomRoutes = require('./roomRoutes');
 const receptionistRoutes = require('./receptionistRoutes')
 const hotelRoutes = require('./hotelRoutes');
-const reservationRoutes = require('./reservationRoutes')
+const reservationRoutes = require('./reservationRoutes');
+const itemsRoutes = require('./itemsRoutes');
 
 
 
@@ -23,4 +24,6 @@ router.use('/category',categoryRoutes)
 router.use('/room',roomRoutes)
 router.use('/receptionist',receptionistRoutes)
 router.use('/reservation',reservationRoutes)
+router.use('/items',itemsRoutes)
+
 module.exports = router
