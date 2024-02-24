@@ -42,14 +42,16 @@ exports.get = catchAsyncErrors(async (req, res, next) => {
 
 /**Get all employess */
 exports.index = catchAsyncErrors(async (req, res, next) => {
-    
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const startIndex = (page - 1) * limit;
     const {type}=req.query;
     const query={};
     if(type){
         query.type=type;
     }
 
-    const allEmployees = await Employee.find(query)
+    const allEmployees = await Employee.find(query).skip(startIndex).limit(limit);
     // console.log(query);
     
     res.status(200).json({

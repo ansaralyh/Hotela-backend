@@ -42,17 +42,21 @@ exports.get = catchAsyncErrors(async (req, res, next) => {
 // Get all customers
 
 exports.index = catchAsyncErrors(async (req, res, next) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 2;
+    const accessTokenBranchId = req.user.branch_id;
+    const startIndex = (page - 1) * limit;
+
+    const allCustomers = await Customer.find({ branch_id: accessTokenBranchId }).skip(startIndex).limit(limit);
     
-    const accessTokenBranchId = req.user.branch_id
-    const allCustomers = await Customer.find({branch_id:accessTokenBranchId});
-    
-    if (!allCustomers) {
+    if (!allCustomers ) {
         return next(new ErrorHandler('Customers not found'));
     }
+    
     res.status(200).json({
         success: true,
-        allCustomers
-    })
+        result:allCustomers
+    });
 });
 
 //Update customer details
