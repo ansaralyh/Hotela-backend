@@ -9,38 +9,11 @@ const itemsSchema = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:"Branch"
     },
-    mineral_water: {
-        type: String,
+    name:{
+        type:String
     },
-    mix_tea: {
-        type: String,
-    },
-    sandwitch: {
-        type: String,
-    },
-    chiken_karahi: {
-        type: String,
-    },
-    rotti: {
-        type: String,
-    },
-    salad: {
-        type: String,
-    },
-    raita: {
-        type: String,
-    },
-    cold_drink: {
-        type: String,
-    },
-    chicken_shanshilk: {
-        type: String,
-    },
-    chihken_fried_rice: {
-        type: String,
-    },
-    grill_salad: {
-        type: String,
+    cost:{
+        type:Number
     }
 
 },
