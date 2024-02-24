@@ -39,7 +39,10 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
 
 //Get all receptionist
 exports.index = catchAsyncErrors(async (req, res, next) => {
-  const receptionist = await users.find({ role: "receptionist" });
+  const page = parseInt(req.query.page) || 1; 
+  const limit = parseInt(req.query.limit) ||10; 
+  const startIndex = (page - 1) * limit; 
+  const receptionist = await users.find({ role: "receptionist" }).skip(startIndex).limit(limit);
   res.status(200).json({
     messege: "Operation successfull",
     result: receptionist,

@@ -12,7 +12,10 @@ exports.store = catchAsyncError(async (req, res, next) => {
 
 // Retrieve all items
 exports.index = catchAsyncError(async (req, res, next) => {
-    const items = await Items.find();
+    const page = parseInt(req.query.page) || 1; 
+    const limit = parseInt(req.query.limit) ||10; 
+    const startIndex = (page - 1) * limit; 
+    const items = await Items.find().skip(startIndex).limit(limit);
     res.status(200).json({
         message: "Items retrieved successfully",
         result: items

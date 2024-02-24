@@ -18,12 +18,27 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
 })  
 
 exports.index = catchAsyncErrors(async (req, res, next) => {
-
-    const categories = await Category.find({ hotel_id:req.user.hotel_id})
+    const page = parseInt(req.query.page) || 1; 
+    const limit = parseInt(req.query.limit) ||10; 
+    const startIndex = (page - 1) * limit; 
+    const categories = await Category.find({ hotel_id:req.user.hotel_id}).skip(startIndex).limit(limit);
 
     res.status(200).json({
         message: "Operation Successfull",
         result: categories
     })
 
+});
+
+
+exports.get = catchAsyncErrors(async (req, res, next) => {
+    const roomCategoryId = req.params.id;
+    const category = await Category.findById(roomCategoryId);
+    if (!category) {
+        return next(new ErrorHandler('Reservation not found', 404));
+    }
+    res.status(200).json({
+        message: 'Reservation found',
+        result: category
+    });
 });

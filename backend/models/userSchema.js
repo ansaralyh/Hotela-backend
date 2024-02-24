@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema({
     dateOfBirth: {
         type: Date,
     },
-    profilePicture: {
+    image: {
         type:String
     },
     role: {
