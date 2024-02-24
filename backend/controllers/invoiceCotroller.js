@@ -26,12 +26,19 @@ exports.get = catchAsyncError(async (req, res, next) => {
 
 // get all invoices
 exports.index = catchAsyncError(async (req, res, next) => {
-    const invoices = await Invoice.find();
+    const page = parseInt(req.query.page) || 1; 
+    const limit = parseInt(req.query.limit) ||10; 
+
+    const startIndex = (page - 1) * limit; 
+
+    const invoices = await Invoice.find().skip(startIndex).limit(limit); 
+
     res.status(200).json({
         message: "Operation successful",
         results: invoices
     });
 });
+
 
 // update invoice
 exports.update = catchAsyncError(async (req, res, next) => {
