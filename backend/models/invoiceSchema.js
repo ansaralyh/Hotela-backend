@@ -1,54 +1,61 @@
 const mongoose = require('mongoose');
-const invoiceSchema = new mongoose.Schema({
-    hotel_id:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"Hotel"
-    },
-    branch_id:{
 
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"Branch"
+const invoiceSchema = new mongoose.Schema({
+    hotel_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Hotel"
     },
-    items:[
-        {
-            type:mongoose.Schema.Types.ObjectId,
-            ref:"Items"
-        }
-    ],
-    customer_name:{
-        type:String
+    branch_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Branch"
     },
-    status:{
-        type:String,
-        enum:['paid','unpaid'],
-        default:'unpaid',
+    items: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Items"
+    }],
+    customer_name: {
+        type: String
     },
-    total_spent_days:{
-        type:Number
+    status: {
+        type: String,
+        enum: ['paid', 'unpaid'],
+        default: 'unpaid',
     },
-    rent_per_day:{
-        type:Number
+    total_spent_days: {
+        type: Number
     },
-    total_room_rent:{
-        type:Number
+    rent_per_day: {
+        type: Number
     },
-    total_order_amount:{
-        
-        type:Number
+    total_room_rent: {
+        type: Number
     },
-    checkInDate:{
-        type:Date
+    total_order_amount: {
+        type: Number
     },
-    checkOutDate:{
-        type:Date
+    checkInDate: {
+        type: Date,
     },
-    amount_received:{
-        type:Number
+    checkOutDate: {
+        type: Date, 
     },
-    return_amount:{
+    checkInTime: {
+        type: String, 
+    },
+    checkOutTime: {
+        type: String,
+    },
+    amount_received: {
+        type: Number
+    },
+    return_amount: {
+        type: Number
+    },
+    discount:{
         type:Number
     }
-
+}, {
+    timestamps: true
 });
 
-module.exports = mongoose.model("Invoice",invoiceSchema);
+module.exports = mongoose.model("Invoice", invoiceSchema);
