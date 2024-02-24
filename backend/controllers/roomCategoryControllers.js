@@ -42,3 +42,34 @@ exports.get = catchAsyncErrors(async (req, res, next) => {
         result: category
     });
 });
+
+exports.update = catchAsyncErrors(async (req, res, next) => {
+    const roomCategoryId = req.params.id;
+    const updateData = req.body;
+    const updatedCategory = await Category.findByIdAndUpdate(roomCategoryId, updateData, {
+        new: true,
+        runValidators: true,
+      });
+      if (!updatedCategory) {
+        return res.status(404).json({
+          success: false,
+          message: "category not found",
+        });
+      }
+      
+  res.status(200).json({
+    success: true,
+    updatedCategory,
+  });
+  });
+
+  exports.destroy = catchAsyncErrors(async (req, res, next) => {
+    const removeCategory = await Category.findById(req.params.id);
+    if (!removeCategory) {
+      return next(new ErrorHandler("category not found", 404));
+    }
+    await Category.findByIdAndDelete(req.params.id);
+    res.status(200).json({
+      message: "Category deleted successfully!",
+    });
+  });
