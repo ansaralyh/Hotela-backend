@@ -44,7 +44,7 @@ const employeeSchema = new mongoose.Schema({
         type: String,
 
     },
-    
+
     dob: {
         type: Date
     },

@@ -5,10 +5,10 @@ const catchAsyncErrors = require('../middleware/catchAsyncErrors')
 const Employee = require('../models/employeeSchema');
 const { request } = require('express');
 
-/**Create Single Employee */
+/**Create  Employee */
 exports.store = catchAsyncErrors(async (req, res, next) => {
     
-   
+    console.log(req.body)
     const {type,name,cnic,gender,contact,joiningDate,email,emergencyContact,hotel_id,branch_id} = req.body;
 
     if(!type || !name || !cnic || !gender || !contact || !joiningDate || !email || !emergencyContact || !hotel_id || !branch_id){
@@ -25,6 +25,7 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
 });
 
 
+
 /**Get single employee by empID */
 exports.get = catchAsyncErrors(async (req, res, next) => {
     const singleEmployee = await Employee.findById(req.params.id);
@@ -33,8 +34,8 @@ exports.get = catchAsyncErrors(async (req, res, next) => {
     }
 
     res.status(200).json({
-        messege:"Operation successful",
-        result:singleEmployee
+        messege: "Operation successful",
+        result: singleEmployee
     })
 });
 
@@ -42,21 +43,19 @@ exports.get = catchAsyncErrors(async (req, res, next) => {
 
 /**Get all employess */
 exports.index = catchAsyncErrors(async (req, res, next) => {
+
+    const { type } = req.query;
+    const query = {};
+    if (type) {
+        query.type = type;
+    }
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const startIndex = (page - 1) * limit;
-    const {type}=req.query;
-    const query={};
-    if(type){
-        query.type=type;
-    }
-
     const allEmployees = await Employee.find(query).skip(startIndex).limit(limit);
-    // console.log(query);
-    
     res.status(200).json({
-        messege:"Operation  successful",
-       result: allEmployees
+        messege: "Operation  successful",
+        result: allEmployees
     })
 });
 
@@ -80,7 +79,7 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
     await updatedData.save();
     res.status(200).json({
         message: "Operation successfully",
-        result:updateField
+        result: updateField
     });
 });
 
@@ -88,13 +87,13 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
 /**Delete an employee */
 exports.destroy = catchAsyncErrors(async (req, res, next) => {
     const employeeId = req.params.id;
-    
-    const currentEmplpoyee = await Employee.findByIdAndDelete( employeeId );
+
+    const currentEmplpoyee = await Employee.findByIdAndDelete(employeeId);
     console.log(currentEmplpoyee)
     if (!currentEmplpoyee) {
         return next(new ErrorHandler('Employee not Found', 404));
     }
-   
+
 
     res.status(200).json({
         message: 'Operation successfully'
