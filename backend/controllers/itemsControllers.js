@@ -16,6 +16,9 @@ exports.index = catchAsyncError(async (req, res, next) => {
     const limit = parseInt(req.query.limit) ||10; 
     const startIndex = (page - 1) * limit; 
     const items = await Items.find().skip(startIndex).limit(limit);
+    if(!items){
+        return next(new ErrorHandler("Items not found", 404));
+    }
     res.status(200).json({
         message: "Items retrieved successfully",
         result: items

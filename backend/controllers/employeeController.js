@@ -53,6 +53,9 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 10;
     const startIndex = (page - 1) * limit;
     const allEmployees = await Employee.find(query).skip(startIndex).limit(limit);
+    if(!allEmployees){
+        return next(new ErrorHandler("Employees not found", 404));
+    }
     res.status(200).json({
         messege: "Operation  successful",
         result: allEmployees

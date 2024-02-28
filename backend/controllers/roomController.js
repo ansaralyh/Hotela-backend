@@ -49,7 +49,10 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
     if (isReserved) {
         query.isReserved = isReserved;
     }
-    const rooms = await Room.find(query).populate("room_category").skip(startIndex).limit(limit);;
+    const rooms = await Room.find(query).populate("room_category").skip(startIndex).limit(limit);
+    if(!rooms){
+        return next(new ErrorHandler('Rooms not found', 404));
+    }
     res.status(200).json({
         messege: "Operation Successfull",
         result: rooms

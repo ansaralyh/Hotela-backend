@@ -55,6 +55,9 @@ exports.get = catchAsyncErrors(async (req, res, next) => {
 /**Get all branches */
 exports.index = catchAsyncErrors(async (req, res, next) => {
   const allBranches = await Branch.find();
+  if(!allBranches){
+    return next(new ErrorHandler("Branches not found", 404));
+  }
   res.status(200).json({
     messege: "Operation successfulll",
     result:allBranches,

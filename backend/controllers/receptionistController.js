@@ -43,6 +43,9 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
   const limit = parseInt(req.query.limit) ||10; 
   const startIndex = (page - 1) * limit; 
   const receptionist = await users.find({ role: "receptionist" }).skip(startIndex).limit(limit);
+  if(!receptionist){
+    return next(new ErrorHandler("Receptionist not found", 404));
+  }
   res.status(200).json({
     messege: "Operation successfull",
     result: receptionist,

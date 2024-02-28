@@ -19,10 +19,12 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
     const page = parseInt(req.query.page) || 1; 
     const limit = parseInt(req.query.limit) ||10; 
     const startIndex = (page - 1) * limit; 
-    const reservations = await Reservations.find().skip(startIndex).limit(limit);;
+    const reservations = await Reservations.find().skip(startIndex).limit(limit);
+    if(!reservations){
+        return next(new ErrorHandler("Reservations not found", 404));
+    }
     res.status(200).json({
         message: 'All reservations retrieved successfully',
-        
         result: reservations
     });
 });

@@ -32,6 +32,9 @@ exports.index = catchAsyncError(async (req, res, next) => {
     const startIndex = (page - 1) * limit; 
 
     const invoices = await Invoice.find().skip(startIndex).limit(limit); 
+    if(!invoices){
+        return next(new ErrorHandler("Invoices not found", 404));
+    }
 
     res.status(200).json({
         message: "Operation successful",
