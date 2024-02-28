@@ -38,10 +38,10 @@ exports.get = catchAsyncErrors(async (req, res, next) => {
     const roomCategoryId = req.params.id;
     const category = await Category.findById(roomCategoryId);
     if (!category) {
-        return next(new ErrorHandler('Reservation not found', 404));
+        return next(new ErrorHandler('Category not found', 404));
     }
     res.status(200).json({
-        message: 'Reservation found',
+        message: 'Category found',
         result: category
     });
 });
