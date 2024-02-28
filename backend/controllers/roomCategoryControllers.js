@@ -22,7 +22,7 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
     const limit = parseInt(req.query.limit) ||10; 
     const startIndex = (page - 1) * limit; 
     const categories = await Category.find({ hotel_id:req.user.hotel_id}).skip(startIndex).limit(limit);
-  if(!categories){
+  if(!categories || categories.length <= 0){
     return next(new ErrorHandler("No categories to show",400))
   }
 
