@@ -20,6 +20,7 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
+
 /**Login Owner */
 exports.login = catchAsyncErrors(async (req, res, next) => {
   const { email, password } = req.body;
