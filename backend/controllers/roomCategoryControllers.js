@@ -45,7 +45,7 @@ exports.get = catchAsyncErrors(async (req, res, next) => {
         result: category
     });
 });
-
+ 
 exports.update = catchAsyncErrors(async (req, res, next) => {
     const roomCategoryId = req.params.id;
     const updateData = req.body;
