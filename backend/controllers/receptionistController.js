@@ -18,6 +18,14 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
     });
   }
 
+  const existingReceptionist = await users.findOne({ branch_id, role: "receptionist" });
+  if (existingReceptionist) {
+    return res.status(400).json({
+      success: false,
+      message: "Receptionist already associated with this branch",
+    });
+  }
+
   const hashedPassword = await bcrypt.hash(req.body.password, salt);
   req.body.password = hashedPassword;
   const newReceptionist = await users.create({
@@ -32,10 +40,11 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
   });
 
   res.status(200).json({
-    messege: "Oeration successful",
+    message: "Operation successful",
     result: newReceptionist,
   });
 });
+
 
 //Get all receptionist
 exports.index = catchAsyncErrors(async (req, res, next) => {

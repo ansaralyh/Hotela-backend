@@ -42,15 +42,20 @@ exports.login = catchAsyncErrors(async (req, res, next) => {
   } else {
     let token = "";
     if (result.role === "receptionist") {
-      token = jwt.sign(
-        {
-          id: result._id,
-          hotel_id: result.hotel_id._id,
-          branch_id: result.branch_id._id,
-        },
-        process.env.JWT_SECRET,
-        { expiresIn: process.env.JWT_EXPIRE }
-      );
+      if(result.branch_id){
+
+        token = jwt.sign(
+          {
+            id: result._id,
+            hotel_id: result.hotel_id._id,
+            branch_id: result.branch_id._id,
+          },
+          process.env.JWT_SECRET,
+          { expiresIn: process.env.JWT_EXPIRE }
+        );
+      } else{
+        return next(new ErrorHandler("No branch associated with this receptiionist"))
+      }
     } else {
       token = jwt.sign(
         { id: result._id, hotel_id: result.hotel_id._id },
