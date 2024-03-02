@@ -23,8 +23,10 @@ const customerSchema = new mongoose.Schema({
         required: true,
     },
     maritalStatus: {
-        type: String,
-        enum: ["married", "single"]
+        type: String
+    },
+    contact:{
+        type:String
     },
     emergencyContact: {
         type: Number

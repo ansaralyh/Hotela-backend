@@ -1,6 +1,14 @@
 const mongoose = require('mongoose');
 
 const reservationSchema = new mongoose.Schema({
+    hotel_id:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Hotel'
+    },
+    branch_id:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Branch'
+    },
     booking_id: {
         type: mongoose.Schema.Types.ObjectId,
         default: () => new mongoose.Types.ObjectId() 
@@ -20,9 +28,9 @@ const reservationSchema = new mongoose.Schema({
         ref:'Room'
     },
     status:{
-
         type:String,
-        enum : ['un-paid', 'paid'],
+        enum : ['unpaid', 'paid'],
+        default:"unpaid"
     },
     
 });

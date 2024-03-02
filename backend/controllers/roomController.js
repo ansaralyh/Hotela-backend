@@ -62,7 +62,7 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
     }
 
     // If no dates provided, fetch all rooms
-    const rooms = await Room.find().skip(startIndex).limit(limit);
+    const rooms = await Room.find().populate('room_category').skip(startIndex).limit(limit);
 
     if (!rooms || rooms.length === 0) {
         return next(new ErrorHandler('No rooms found', 404));
