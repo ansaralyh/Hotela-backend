@@ -61,7 +61,7 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
 
 //function to find a room
 exports.get = catchAsyncErrors(async (req, res, next) => {
-    const room = await Room.findById(req.params.id);
+    const room = await Room.findById(req.params.id).populate("room_category");
     if (!room) {
         return next(new ErrorHandler('Room not found', 404));
 
