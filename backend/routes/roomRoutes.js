@@ -15,4 +15,4 @@ router.get('/:id',auth,isAuthorizedRole(['owner','receptionist']),get)
 // room reservation route
 router.put('/:id',auth,isAuthorizedRole(['owner','receptionist']),update);
 
-module.exports = router
+module.exports = router 
