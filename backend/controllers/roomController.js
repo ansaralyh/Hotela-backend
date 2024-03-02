@@ -20,11 +20,9 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
         const imageUrl = `${req.protocol}://${req.get("host")}/${fileName}`; 
         req.body.image = imageUrl; 
     }
-
     if (!room_category || !room_number || !image) {
         return next(new ErrorHandler('Fields missing', 400))
     };
-
     const result = await Room.create({ room_category, room_number, image: req.body.image, hotel_id: req.user.hotel_id });
     res.status(201).json({
         message: "Operation Successful",
@@ -41,7 +39,6 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
       const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const startIndex = (page - 1) * limit;
-
     if (!req.user.hotel_id) {
         return next(new ErrorHandler("Please Provide hotel id", 400))
     }
@@ -64,7 +61,6 @@ exports.get = catchAsyncErrors(async (req, res, next) => {
     const room = await Room.findById(req.params.id);
     if (!room) {
         return next(new ErrorHandler('Room not found', 404));
-
     }
     res.status(200).json({
         messege: "Operation successful",
@@ -74,21 +70,14 @@ exports.get = catchAsyncErrors(async (req, res, next) => {
 
 //Function to reserve a room
 exports.update = catchAsyncErrors(async (req, res, next) => {
-
     const room = await Room.findById(req.params.id);
     if (!room) {
         return next(new ErrorHandler('Room not found', 404));
     }
     room.isReserved = room.isReserved === 1 ? 0 : 1;
-
-
     await room.save();
-
     res.status(200).json({
         messege: "Room reserved successfully",
-
-        result: room
-
-    })
-
-})
+         result: room
+    });
+});
