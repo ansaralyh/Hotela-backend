@@ -41,28 +41,39 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 10;
     const startIndex = (page - 1) * limit;
 
-    // Validate that both check-in and check-out dates are provided
-    if (!checkInDate || !checkOutDate) {
-        return next(new ErrorHandler('Please provide both check-in and check-out dates', 400));
+    // If both check-in and check-out dates are provided
+    if (checkInDate && checkOutDate) {
+        // Find reservations overlapping with the specified dates
+        const existingReservations = await Reservations.find({
+            checkInDate: { $lt: checkOutDate },
+            checkOutDate: { $gt: checkInDate }
+        }).distinct('room_id');
+
+        // Find all rooms
+        const rooms = await Room.find();
+
+        // Filter available rooms
+        const availableRooms = rooms.filter(room => !existingReservations.includes(room._id));
+
+        return res.status(200).json({
+            message: 'Rooms availability checked successfully',
+            availableRooms: availableRooms
+        });
     }
 
-    // Find reservations overlapping with the specified dates
-    const existingReservations = await Reservations.find({
-        checkInDate: { $lt: checkOutDate },
-        checkOutDate: { $gt: checkInDate }
-    }).distinct('room_id');
+    // If no dates provided, fetch all rooms
+    const rooms = await Room.find().skip(startIndex).limit(limit);
 
-    // Find all rooms
-    const rooms = await Room.find();
-
-    // Filter available rooms
-    const availableRooms = rooms.filter(room => !existingReservations.includes(room._id));
+    if (!rooms || rooms.length === 0) {
+        return next(new ErrorHandler('No rooms found', 404));
+    }
 
     res.status(200).json({
-        message: 'Rooms availability checked successfully',
-        availableRooms: availableRooms
+        message: 'All rooms retrieved successfully',
+        result: rooms
     });
 });
+
 
 
 //function to find a room

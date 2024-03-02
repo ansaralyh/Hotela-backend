@@ -4,7 +4,9 @@ const catchAsyncErrors = require('../middleware/catchAsyncErrors');
 const Rooms = require('../models/roomModel')
 
 exports.store = catchAsyncErrors(async (req, res, next) => {
-    const { customer_id, checkInDate, checkOutDate, room_id, status } = req.body;
+    
+    const { checkInDate, checkOutDate } = req.query;
+    const { customer_id, room_id, status } = req.body;
     if (!customer_id || !checkInDate || !checkOutDate || !room_id || !status) {
         return next(new ErrorHandler("Fields missing", 400));
     }
