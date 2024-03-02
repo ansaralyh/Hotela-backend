@@ -44,10 +44,6 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
     // Fetch reservations based on query and pagination
     const reservations = await Reservations.find(query).skip(startIndex).limit(limit).populate('customer_id').populate('room_id');
 
-    if (!reservations || reservations.length === 0) {
-        return next(new ErrorHandler("No reservations found for the provided dates", 404));
-    }
-
     res.status(200).json({
         message: 'Reservations retrieved successfully',
         result: reservations
