@@ -1,5 +1,5 @@
 const express = require('express');
-const { store, index, get, update, } = require('../controllers/roomController');
+const { store, index, get, update,destroy } = require('../controllers/roomController');
 const {auth,isAuthorizedRole} = require('../middleware/authentication');
 const router = express.Router();
 
@@ -14,5 +14,7 @@ router.get('/:id',auth,isAuthorizedRole(['owner','receptionist']),get)
 
 // room reservation route
 router.put('/:id',auth,isAuthorizedRole(['owner','receptionist']),update);
+router.delete('/:id',auth,isAuthorizedRole(['owner','receptionist']),destroy);
+
 
 module.exports = router 

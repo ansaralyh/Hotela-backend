@@ -101,3 +101,16 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
          result: room
     });
 });
+
+exports.destroy = catchAsyncErrors(async (req, res ,next)=>{
+    const roomId = req.params.id;
+    const currentRoom = await Room.findByIdAndDelete(roomId);
+    if (!currentRoom) {
+        return next(new ErrorHandler('room not Found', 404));
+    }
+
+
+    res.status(200).json({
+        message: 'Operation successfully'
+    })
+})

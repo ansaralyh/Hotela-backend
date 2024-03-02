@@ -33,15 +33,12 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const startIndex = (page - 1) * limit;
-
-    // Extract check-in and check-out dates from query parameters
     const query = {};
     if (req.query.checkInDate
         && req.query.checkOutDate) {
         query.checkInDate = { $lte: req.query.checkInDate }
         query.checkOutDate = { $gte: req.query.checkOutDate }
     }
-    // Fetch reservations based on query and pagination
     const reservations = await Reservations.find(query).skip(startIndex).limit(limit).populate('customer_id').populate('room_id');
 
     res.status(200).json({

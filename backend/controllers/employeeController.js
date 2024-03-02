@@ -8,7 +8,6 @@ const { request } = require('express');
 /**Create  Employee */
 exports.store = catchAsyncErrors(async (req, res, next) => {
     
-    console.log(req.body)
     const {type,name,cnic,gender,contact,joiningDate,email,emergencyContact,hotel_id,branch_id} = req.body;
 
     if(!type || !name || !cnic || !gender || !contact || !joiningDate || !email || !emergencyContact || !hotel_id || !branch_id){
@@ -24,15 +23,12 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
   
 });
 
-
-
 /**Get single employee by empID */
 exports.get = catchAsyncErrors(async (req, res, next) => {
     const singleEmployee = await Employee.findById(req.params.id);
     if (!singleEmployee) {
         return next(new ErrorHandler(`Employee with ID ${req.params.id} not found`, 404));
     }
-
     res.status(200).json({
         messege: "Operation successful",
         result: singleEmployee
@@ -43,7 +39,6 @@ exports.get = catchAsyncErrors(async (req, res, next) => {
 
 /**Get all employess */
 exports.index = catchAsyncErrors(async (req, res, next) => {
-
     const { type } = req.query;
     const query = {};
     if (type) {
@@ -72,7 +67,6 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
         new: true,
         runValidators: true
     });
-
     if (!updatedData) {
         return res.status(404).json({
             success: false,

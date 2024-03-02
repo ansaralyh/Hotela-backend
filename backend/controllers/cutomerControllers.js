@@ -6,10 +6,10 @@ const catchAsyncErrors = require('../middleware/catchAsyncErrors');
 
 // Create customer
 exports.store = catchAsyncErrors(async (req, res, next) => {
-    const { name, cnic, gender, email, emergencyContactNumber,hotel_id,branch_id} = req.body;
+    const { name, cnic, gender, email, emergencyContact,hotel_id,branch_id} = req.body;
 
 
-    if (!name || !cnic || !gender || !email || !emergencyContactNumber || !hotel_id || !branch_id) {
+    if (!name || !cnic || !gender || !email || !emergencyContact || !hotel_id || !branch_id) {
         return next(new ErrorHandler('Fields are missing', 400))
     }
     const result = await Customer.create(req.body);

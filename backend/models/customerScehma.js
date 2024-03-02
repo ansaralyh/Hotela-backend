@@ -26,7 +26,7 @@ const customerSchema = new mongoose.Schema({
         type: String,
         enum: ["married", "single"]
     },
-    emergencyContactNumber: {
+    emergencyContact: {
         type: Number
     },
     city: {
