@@ -35,27 +35,35 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
 
 //Get all rooms 
 exports.index = catchAsyncErrors(async (req, res, next) => {
-    const { isReserved } = req.query;
+    const { checkInDate, checkOutDate } = req.query;
     const query = {};
-      const page = parseInt(req.query.page) || 1;
+    const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const startIndex = (page - 1) * limit;
-    if (!req.user.hotel_id) {
-        return next(new ErrorHandler("Please Provide hotel id", 400))
+
+    // Validate that both check-in and check-out dates are provided
+    if (!checkInDate || !checkOutDate) {
+        return next(new ErrorHandler('Please provide both check-in and check-out dates', 400));
     }
-    query.hotel_id = req.user.hotel_id;
-    if (isReserved) {
-        query.isReserved = isReserved;
-    }
-    const rooms = await Room.find(query).populate("room_category").skip(startIndex).limit(limit);
-    if(!rooms){
-        return next(new ErrorHandler('Rooms not found', 404));
-    }
+
+    // Find reservations overlapping with the specified dates
+    const existingReservations = await Reservations.find({
+        checkInDate: { $lt: checkOutDate },
+        checkOutDate: { $gt: checkInDate }
+    }).distinct('room_id');
+
+    // Find all rooms
+    const rooms = await Room.find();
+
+    // Filter available rooms
+    const availableRooms = rooms.filter(room => !existingReservations.includes(room._id));
+
     res.status(200).json({
-        messege: "Operation Successfull",
-        result: rooms
-    })
-})
+        message: 'Rooms availability checked successfully',
+        availableRooms: availableRooms
+    });
+});
+
 
 //function to find a room
 exports.get = catchAsyncErrors(async (req, res, next) => {
