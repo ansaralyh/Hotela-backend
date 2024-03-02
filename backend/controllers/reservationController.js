@@ -4,9 +4,7 @@ const catchAsyncErrors = require('../middleware/catchAsyncErrors');
 const Rooms = require('../models/roomModel')
 
 exports.store = catchAsyncErrors(async (req, res, next) => {
-    
-    const { checkInDate, checkOutDate } = req.query;
-    const { customer_id, room_id, status } = req.body;
+    const { customer_id, checkInDate, checkOutDate, room_id, status } = req.body;
     if (!customer_id || !checkInDate || !checkOutDate || !room_id || !status) {
         return next(new ErrorHandler("Fields missing", 400));
     }
@@ -37,24 +35,14 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
     const startIndex = (page - 1) * limit;
 
     // Extract check-in and check-out dates from query parameters
-    const checkInDate = req.query.checkInDate;
-    const checkOutDate = req.query.checkOutDate;
-
-    // Check if both check-in and check-out dates are provided
-    if (!checkInDate || !checkOutDate) {
-        return next(new ErrorHandler("Please provide both check-in and check-out dates", 400));
+    const query = {};
+    if (req.query.checkInDate
+        && req.query.checkOutDate) {
+        query.checkInDate = { $lte: req.query.checkInDate }
+        query.checkOutDate = { $gte: req.query.checkOutDate }
     }
-
-    // Define query object to fetch reservations based on dates
-    const query = {
-        checkInDate: { $lte: checkOutDate }, // Check-in date should be before or on check-out date
-        checkOutDate: { $gte: checkInDate }  // Check-out date should be after or on check-in date
-    };
-
     // Fetch reservations based on query and pagination
-    const reservations = await Reservations.find(query)
-                                          .skip(startIndex)
-                                          .limit(limit);
+    const reservations = await Reservations.find(query).skip(startIndex).limit(limit);
 
     if (!reservations || reservations.length === 0) {
         return next(new ErrorHandler("No reservations found for the provided dates", 404));
