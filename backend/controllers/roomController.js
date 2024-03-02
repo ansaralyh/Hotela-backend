@@ -1,6 +1,7 @@
 const ErrorHandler = require('../utils/ErrorHandler');
 const catchAsyncErrors = require('../middleware/catchAsyncErrors');
 const Room = require('../models/roomModel')
+const Reservations = require('../models/reservationSchema');
 const { uploadFile } = require("../utils/uploadFiles")
 const path = require("path")
 const fs = require('fs')

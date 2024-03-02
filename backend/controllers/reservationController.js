@@ -1,6 +1,7 @@
 const ErrorHandler = require('../utils/ErrorHandler');
 const Reservations = require('../models/reservationSchema');
 const catchAsyncErrors = require('../middleware/catchAsyncErrors');
+const Rooms = require('../models/roomModel')
 
 exports.store = catchAsyncErrors(async (req, res, next) => {
     const { customer_id, checkInDate, checkOutDate, room_id, status } = req.body;
@@ -32,15 +33,38 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const startIndex = (page - 1) * limit;
-    const reservations = await Reservations.find().skip(startIndex).limit(limit);
-    if (!reservations) {
-        return next(new ErrorHandler("Reservations not found", 404));
+
+    // Extract check-in and check-out dates from query parameters
+    const checkInDate = req.query.checkInDate;
+    const checkOutDate = req.query.checkOutDate;
+
+    // Check if both check-in and check-out dates are provided
+    if (!checkInDate || !checkOutDate) {
+        return next(new ErrorHandler("Please provide both check-in and check-out dates", 400));
     }
+
+    // Define query object to fetch reservations based on dates
+    const query = {
+        checkInDate: { $lte: checkOutDate }, // Check-in date should be before or on check-out date
+        checkOutDate: { $gte: checkInDate }  // Check-out date should be after or on check-in date
+    };
+
+    // Fetch reservations based on query and pagination
+    const reservations = await Reservations.find(query)
+                                          .skip(startIndex)
+                                          .limit(limit);
+
+    if (!reservations || reservations.length === 0) {
+        return next(new ErrorHandler("No reservations found for the provided dates", 404));
+    }
+
     res.status(200).json({
-        message: 'All reservations retrieved successfully',
+        message: 'Reservations retrieved successfully',
         result: reservations
     });
 });
+
+
 
 exports.get = catchAsyncErrors(async (req, res, next) => {
     const reservationId = req.params.id;
@@ -79,21 +103,36 @@ exports.destroy = catchAsyncErrors(async (req, res, next) => {
     });
 });
 
-exports.checkAvailability = catchAsyncErrors(async (req, res, next) => {
-    const { room_id, checkInDate, checkOutDate } = req.body;
+// exports.checkAvailability = catchAsyncErrors(async (req, res, next) => {
+//     const { checkInDate, checkOutDate } = req.body;
 
-    const existingReservation = await Reservations.findOne({
-        room_id: room_id,
-        $or: [
-            { checkInDate: { $lt: checkOutDate }, checkOutDate: { $gt: checkInDate } },
-            { checkInDate: { $gte: checkInDate, $lt: checkOutDate } },
-            { checkOutDate: { $gt: checkInDate, $lte: checkOutDate } }
-        ]
-    });
+//     // Fetch all rooms
+//     const rooms = await Rooms.find();
 
-    if (existingReservation) {
-        return res.status(200).json({ available: false, message: "Room is already reserved for the selected dates" });
-    } else {
-        return res.status(200).json({ available: true, message: "Room is available for the selected dates" });
-    }
-});
+//     // Array to store available rooms
+//     const availableRooms = [];
+
+//     // Check availability for each room
+//     for (const room of rooms) {
+//         const existingReservation = await Reservations.findOne({
+//             room_id: room._id,
+//             $or: [
+//                 { checkInDate: { $lt: checkOutDate }, checkOutDate: { $gt: checkInDate } },
+//                 { checkInDate: { $gte: checkInDate, $lt: checkOutDate } },
+//                 { checkOutDate: { $gt: checkInDate, $lte: checkOutDate } }
+//             ]
+//         });
+
+//         // If no existing reservation found, room is available
+//         if (!existingReservation) {
+//             availableRooms.push(room);
+//         }
+//     }
+
+//     // If there are available rooms, respond accordingly
+//     if (availableRooms.length > 0) {
+//         res.status(200).json({ available: true, message: "Rooms are available for the selected dates", rooms: availableRooms });
+//     } else {
+//         res.status(200).json({ available: false, message: "No rooms available for the selected dates" });
+//     }
+// });
