@@ -31,7 +31,7 @@ exports.index = catchAsyncError(async (req, res, next) => {
   const startIndex = (page - 1) * limit;
   const id = req.query.id;
 
-  const invoices = await Invoice.find({ hotel_id: req.user.id, branch_id: id }).populate("customer_id").populate("reservation_id")
+  const invoices = await Invoice.find({ hotel_id: req.user.id, branch_id: id }).populate("customer_id").populate({ path: "reservation_id", populate: { path: "room_id", populate:{path:"room_category"} } })
     .skip(startIndex)
     .limit(limit);
 
