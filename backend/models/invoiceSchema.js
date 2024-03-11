@@ -26,6 +26,10 @@ const invoiceSchema = new mongoose.Schema({
         enum: ['paid', 'unpaid'],
         default: 'unpaid',
     },
+    room_id:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:"Room"
+    },
     total_amount: {
         type: Number
     },

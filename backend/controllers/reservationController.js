@@ -56,6 +56,8 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
+
+
 exports.index = catchAsyncErrors(async (req, res, next) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
@@ -77,6 +79,8 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
+
+
 exports.get = catchAsyncErrors(async (req, res, next) => {
   const reservationId = req.params.id;
   const reservation = await Reservations.findById(reservationId);
@@ -88,6 +92,8 @@ exports.get = catchAsyncErrors(async (req, res, next) => {
     result: reservation,
   });
 });
+
+
 
 exports.update = catchAsyncErrors(async (req, res, next) => {
   const reservationId = req.params.id;
