@@ -13,39 +13,23 @@ const invoiceSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Items"
     }],
-    customer_name: {
-        type: String
+    customer_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref:"customer"
+    },
+    reservation_id:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:"Reservations"
     },
     status: {
         type: String,
         enum: ['paid', 'unpaid'],
         default: 'unpaid',
     },
-    total_spent_days: {
+    total_amount: {
         type: Number
     },
-    rent_per_day: {
-        type: Number
-    },
-    total_room_rent: {
-        type: Number
-    },
-    total_order_amount: {
-        type: Number
-    },
-    checkInDate: {
-        type: Date,
-    },
-    checkOutDate: {
-        type: Date, 
-    },
-    checkInTime: {
-        type: String, 
-    },
-    checkOutTime: {
-        type: String,
-    },
-    amount_received: {
+    recieved_amount: {
         type: Number
     },
     return_amount: {

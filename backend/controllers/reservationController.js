@@ -1,6 +1,9 @@
 const ErrorHandler = require("../utils/ErrorHandler");
 const Reservations = require("../models/reservationSchema");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
+const Invoice = require("../models/invoiceSchema");
+const Room = require("../models/roomModel");
+const { calculateDaysBetweenCheckInOut } = require("../utils/dates");
 const Rooms = require("../models/roomModel");
 
 exports.store = catchAsyncErrors(async (req, res, next) => {
@@ -36,9 +39,20 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
     branch_id,
     hotel_id: req.user.id,
   });
+
+  const days = calculateDaysBetweenCheckInOut(checkInDate, checkOutDate);
+  const room = await Room.findById(room_id).populate("room_category");
+  const amount = parseInt(days) * parseInt(room.room_category.cost);
+  const invoice = await Invoice.create({
+    customer_id,
+    reservation_id: reservation._id,
+    hotel_id: req.user.id,
+    branch_id,
+    total_amount: amount,
+  });
   res.status(201).json({
     message: "Operation successful",
-    result: reservation,
+    result: { reservation, invoice },
   });
 });
 
