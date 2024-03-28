@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const { generateCustomIDMiddleware } = require('../utils/customeIdGenerator')
 
 const employeeSchema = new mongoose.Schema({
 
@@ -61,6 +61,9 @@ const employeeSchema = new mongoose.Schema({
 
 
 });
+
+employeeSchema.pre('save', generateCustomIDMiddleware("Employee"));
+
 
 const Employee = mongoose.model('Employee', employeeSchema);
 

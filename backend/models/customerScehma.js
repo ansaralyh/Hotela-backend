@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-// const Counter = require('./counter.model');
+const { generateCustomIDMiddleware } = require('../utils/customeIdGenerator')
 
 const customerSchema = new mongoose.Schema({
 
@@ -52,6 +52,7 @@ const customerSchema = new mongoose.Schema({
         ref:"Branch"
     }
 });
+
 
 
 

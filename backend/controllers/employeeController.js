@@ -10,9 +10,6 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
     
     const {type,name,cnic,gender,contact,joiningDate,email,emergencyContact,hotel_id,branch_id} = req.body;
 
-    // if(!type || !name || !cnic || !gender || !contact || !joiningDate || !email || !emergencyContact || !hotel_id || !branch_id){
-    //     return next(new ErrorHandler('Fields missing',400))
-    // }
 
     const employee = await Employee.create({type,name,cnic,gender,contact,joiningDate,emergencyContact,branch_id,hotel_id:req.body.hotel_id});
     res.status(200).json({
