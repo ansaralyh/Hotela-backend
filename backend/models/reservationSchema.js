@@ -32,6 +32,10 @@ const reservationSchema = new mongoose.Schema({
         enum : ['unpaid', 'paid'],
         default:"unpaid"
     },
+    cnic:{
+        type:String,
+        unique:true
+    }
     
 });
 

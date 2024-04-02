@@ -62,7 +62,7 @@ const employeeSchema = new mongoose.Schema({
 
 });
 
-employeeSchema.pre('save', generateCustomIDMiddleware("Employee"));
+// employeeSchema.pre('save', generateCustomIDMiddleware("Employee"));
 
 
 const Employee = mongoose.model('Employee', employeeSchema);

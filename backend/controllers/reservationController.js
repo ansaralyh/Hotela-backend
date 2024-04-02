@@ -5,11 +5,12 @@ const Invoice = require("../models/invoiceSchema");
 const Room = require("../models/roomModel");
 const { calculateDaysBetweenCheckInOut } = require("../utils/dates");
 const Rooms = require("../models/roomModel");
+const Customer = require("../models/customerScehma")
 
 exports.store = catchAsyncErrors(async (req, res, next) => {
-    const { customer_id, checkInDate, checkOutDate, room_id, branch_id } =
+    const { customer_id, checkInDate, checkOutDate, room_id, branch_id,cnic} =
         req.body;
-    if (!customer_id || !checkInDate || !checkOutDate || !room_id || !branch_id) {
+    if (!customer_id || !checkInDate || !checkOutDate || !room_id || !branch_id || !cnic) {
         return next(new ErrorHandler("Fields missing", 400));
     }
 
@@ -55,7 +56,6 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
         result: { reservation, invoice },
     });
 });
-
 
 
 exports.index = catchAsyncErrors(async (req, res, next) => {

@@ -4,8 +4,7 @@ const ModelAbbreviations = require('../models/modelAbbreviations');
 async function generateCustomID(modelName) {
     try {
         console.log('model name :', modelName);
-        const abbreviation = await ModelAbbreviations.findOne({ [modelName]: { $exists: true } });
-
+        const abbreviation = await ModelAbbreviations.findOne({});
         console.log('abbreviation :', abbreviation)
         if (!abbreviation || !abbreviation[modelName]) {
             throw new Error(`Model abbreviation not found for model: ${modelName}`);
@@ -13,7 +12,7 @@ async function generateCustomID(modelName) {
 
         const Model = mongoose.model(modelName);
         const lastDocument = await Model.findOne({}, {}, { sort: { 'createdAt': -1 } });
-        let newId = "001"; // Default starting ID
+        let newId = "001"; // DEFAULT STARTING ID
 
         if (lastDocument) {
             const lastId = lastDocument.id;
@@ -23,6 +22,7 @@ async function generateCustomID(modelName) {
 
         return abbreviation[modelName] + newId;
     } catch (error) {
+
         throw error;
     }
 }
@@ -48,3 +48,4 @@ module.exports = {
     generateCustomID,
     generateCustomIDMiddleware
 };
+
