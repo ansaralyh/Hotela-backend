@@ -77,7 +77,7 @@ exports.get = catchAsyncErrors(async (req, res, next) => {
 })
 
 exports.updateComplainStatus = catchAsyncErrors(async (req, res, next) => {
-    const compplain_id = req.params.id;
+    const complain_id = req.params.id;
 
     const complain = await Complains.findById(compplain_id);
 
@@ -85,7 +85,7 @@ exports.updateComplainStatus = catchAsyncErrors(async (req, res, next) => {
         return next(new ErrorHandler('Complain not found', 404));
     }
 
-    const updatedComplain = await Complains.findByIdAndUpdate(compplain_id, {
+    const updatedComplain = await Complains.findByIdAndUpdate(complain_id, {
         isResolved:!complain.isResolved,
     }, { new: true });
 
