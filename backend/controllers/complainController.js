@@ -76,15 +76,22 @@ exports.get = catchAsyncErrors(async (req, res, next) => {
     })
 })
 
-// exports.getAllCountComplains = catchAsyncErrors(async (req, res, nxt) => {
-//     try {
-//         console.log("Api is working fine")
+exports.updateComplainStatus = catchAsyncErrors(async (req, res, next) => {
+    const compplain_id = req.params.id;
 
-//         res.status(200).json({
-//             messege: "Operation successfull",
-//             result: allComplains
-//         })
-//     } catch (error) {
-//         console.log("500 issue")
-//     }
-// })
+    const complain = await Complains.findById(compplain_id);
+
+    if (!complain) {
+        return next(new ErrorHandler('Complain not found', 404));
+    }
+
+    const updatedComplain = await Complains.findByIdAndUpdate(compplain_id, {
+        isResolved:!complain.isResolved,
+    }, { new: true });
+
+    res.status(200).json({
+        message: "Complain status updated successfully",
+        result: updatedComplain,
+    });
+});
+

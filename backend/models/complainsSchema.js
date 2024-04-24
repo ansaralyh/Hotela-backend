@@ -12,7 +12,7 @@ const complainsSchema = new mongoose.Schema({
     },
     isResolved:{
         type:Boolean,
-        default:false
+        default:false 
     },
 
 })
