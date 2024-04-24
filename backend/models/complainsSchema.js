@@ -13,7 +13,8 @@ const complainsSchema = new mongoose.Schema({
     isResolved:{
         type:Boolean,
         default:false
-    }
+    },
+
 })
 
 module.exports = mongoose.model('complains',complainsSchema)
