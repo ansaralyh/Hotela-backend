@@ -33,6 +33,7 @@ exports.login = catchAsyncErrors(async (req, res, next) => {
   if (!result) {
     return next(new ErrorHandler("Invalid credentials", 401));
   }
+  
   const isPasswordMatched = await bcrypt.compare(password, result.password);
   if (!isPasswordMatched) {
     return next(new ErrorHandler("Invalid credentials", 401));

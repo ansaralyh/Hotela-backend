@@ -8,7 +8,7 @@ const Rooms = require("../models/roomModel");
 const Customer = require("../models/customerScehma")
 
 exports.store = catchAsyncErrors(async (req, res, next) => {
-    const { customer_id, checkInDate, checkOutDate, room_id, branch_id,cnic} =
+    const { customer_id, checkInDate, checkOutDate, room_id, branch_id, cnic } =
         req.body;
     if (!customer_id || !checkInDate || !checkOutDate || !room_id || !branch_id || !cnic) {
         return next(new ErrorHandler("Fields missing", 400));
@@ -33,7 +33,7 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
     }
 
     const reservation = await Reservations.create({
-        customer_id,
+        customer_id, 
         checkInDate,
         checkOutDate,
         room_id,
