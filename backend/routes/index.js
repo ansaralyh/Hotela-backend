@@ -27,7 +27,7 @@ router.use('/room',roomRoutes)
 router.use('/receptionist',receptionistRoutes)
 router.use('/reservation',reservationRoutes)
 router.use('/items',itemsRoutes)
-router.use('/invoice',invoiceRoutes)
+router.use('/invoice',invoiceRoutes)    
 router.use('/complains',complainsRoutes)
 
 module.exports = router
