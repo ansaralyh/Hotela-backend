@@ -105,7 +105,6 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
 });
 
 // Delete a customer by customer id
-
 exports.destroy = catchAsyncErrors(async (req, res, next) => {
   const customer_id = req.params.id;
   const result = await Customer.findByIdAndDelete(customer_id);
