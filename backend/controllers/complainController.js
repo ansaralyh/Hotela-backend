@@ -61,6 +61,7 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
 });
 
 
+
 exports.get = catchAsyncErrors(async (req, res, next) => {
     const complain = req.params.id;
     const result = await Complains.findById(complain)
