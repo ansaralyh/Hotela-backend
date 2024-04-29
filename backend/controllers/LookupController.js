@@ -2,7 +2,7 @@ const ErrorHandler = require('../utils/ErrorHandler');
 const catchAsyncError = require('../middleware/catchAsyncErrors');
 const Lookups = require('../models/LookupSchema');
 
-exports.createLookup = catchAsyncError(async (req, res, next) => {
+exports.store = catchAsyncError(async (req, res, next) => {
     const lookup = await Lookups.create(req.body);
 
     res.status(200).json({
