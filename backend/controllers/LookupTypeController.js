@@ -3,7 +3,7 @@ const catchAsyncError = require('../middleware/catchAsyncErrors');
 const lookupTypeSchema = require('../models/LookupTypeSchema')
 
 exports.store = catchAsyncError(async (req, res, next) => {
-    const {name, description} = req.body;
+    const { name, description } = req.body;
     const result = await lookupTypeSchema.create({
         name,
         description

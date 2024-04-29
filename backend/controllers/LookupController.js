@@ -37,31 +37,31 @@ exports.get = catchAsyncError(async (req, res, next) => {
 
 exports.update = catchAsyncError(async (req, res, next) => {
     let lookup = await Lookups.findById(req.params.id);
-  
-    if (!lookup) {
-      return next(new ErrorHandler('Lookup not found', 404));
-    }
-  
-    lookup = await Lookups.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-      useFindAndModify: false,
-    }).populate('lookup_type_id');
-  
-    res.status(200).json({
-      success: true,
-      result:lookup,
-    });
-  });
 
-  exports.destroy = catchAsyncError(async (req, res, next) => {
+    if (!lookup) {
+        return next(new ErrorHandler('Lookup not found', 404));
+    }
+
+    lookup = await Lookups.findByIdAndUpdate(req.params.id, req.body, {
+        new: true,
+        runValidators: true,
+        useFindAndModify: false,
+    }).populate('lookup_type_id');
+
+    res.status(200).json({
+        success: true,
+        result: lookup,
+    });
+});
+
+exports.destroy = catchAsyncError(async (req, res, next) => {
     const lookup = await Lookups.findByIdAndDelete(req.params.id);
-    if(!lookup){
+    if (!lookup) {
         return next(new ErrorHandler('Lookup  not found', 404));
     }
     res.status(200).json({
         success: true,
         message: 'Lookup  deleted successfully',
     });
-    
-  });
+
+});
