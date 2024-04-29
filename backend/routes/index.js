@@ -13,6 +13,7 @@ const reservationRoutes = require('./reservationRoutes');
 const itemsRoutes = require('./itemsRoutes');
 const invoiceRoutes = require('./invoiceRoutes');
 const complainsRoutes = require('./complainsRoutes')
+const lookupTypeRoutes = require('./LookuptypeRoute')
 
 
 
@@ -29,5 +30,6 @@ router.use('/reservation',reservationRoutes)
 router.use('/items',itemsRoutes)
 router.use('/invoice',invoiceRoutes)    
 router.use('/complains',complainsRoutes)
+router.use('/lookupType',lookupTypeRoutes)
 
 module.exports = router
