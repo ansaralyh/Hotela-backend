@@ -73,7 +73,7 @@ exports.get = catchAsyncErrors(async (req, res, next) => {
         return next(new ErrorHandler("Couldn't find customer", 404))
     }
     res.status(200).json({
-        messege: "Operation successfull",
+        message: "Operation successful",
         result
     })
 })
