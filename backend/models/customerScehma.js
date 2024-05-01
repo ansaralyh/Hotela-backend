@@ -52,6 +52,9 @@ const customerSchema = new mongoose.Schema({
         ref:"Branch"
     }
 });
+
+
+
   
 
 const customer = mongoose.model('customer', customerSchema);
