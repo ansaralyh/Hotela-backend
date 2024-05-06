@@ -3,9 +3,8 @@ const { generateCustomIDMiddleware } = require('../utils/customeIdGenerator')
 
 const employeeSchema = new mongoose.Schema({
 
-    type: {
-        type: Number, //1.Manager 2.Chef, 3.Room Cleaner 
-
+    possition: {
+        type: String, //1.Manager 2.Chef, 3.Room Cleaner 
     },
     name: {
         type: String,
@@ -44,7 +43,10 @@ const employeeSchema = new mongoose.Schema({
         type: String,
 
     },
-
+    bank_details:{
+        iban: String,
+        name: String
+    },
     dob: {
         type: Date
     },
@@ -57,9 +59,6 @@ const employeeSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Branch"
     }
-
-
-
 });
 
 // employeeSchema.pre('save', generateCustomIDMiddleware("Employee"));

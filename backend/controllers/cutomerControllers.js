@@ -31,7 +31,7 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
     ...req.body,
     hotel_id: req.user.hotel_id,
   });
-  res.status(201).json({
+  res.status(200).json({
     messege: "Customer registered successfully",
     result,
   });

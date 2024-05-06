@@ -11,7 +11,6 @@ const roomCategoryScehma = new mongoose.Schema({
         type: String,
     },
     ammenities: {
-        //0 for false, 1 for true
         air_conditioner: {
             type: Number,
             default: 0
@@ -39,7 +38,14 @@ const roomCategoryScehma = new mongoose.Schema({
         ref: "Hotel"
     },
     
+},{
+    timestamps:true,
+    toJSON:{virtuals:true}
 });
+
+roomCategoryScehma.virtual('id').get(function(){
+    return this._id
+})
 
 const Category = mongoose.model('Category',roomCategoryScehma);
 module.exports = Category

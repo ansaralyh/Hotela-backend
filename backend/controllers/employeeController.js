@@ -8,16 +8,14 @@ const { request } = require('express');
 /**Create  Employee */
 exports.store = catchAsyncErrors(async (req, res, next) => {
     
-    const {type,name,cnic,gender,contact,joiningDate,email,emergencyContact,hotel_id,branch_id} = req.body;
+    const {possition,name,cnic,gender,contact,joiningDate,email,emergencyContact,branch_id,bank_details} = req.body;
 
 
-    const employee = await Employee.create({type,name,cnic,gender,contact,joiningDate,emergencyContact,branch_id,hotel_id:req.body.hotel_id});
+    const employee = await Employee.create({possition,name,email,cnic,gender,contact,joiningDate,emergencyContact,branch_id,hotel_id:req.body.hotel_id,bank_details});
     res.status(200).json({
         messege:"Operation successful",
         result: employee
     })
-
-  
 });
 
 /**Get single employee by empID */
