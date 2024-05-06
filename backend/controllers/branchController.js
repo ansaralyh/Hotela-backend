@@ -5,6 +5,7 @@ const fs = require("fs");
 const { uploadFile } = require("../utils/uploadFiles");
 const path = require("path");
 
+
 exports.store = catchAsyncErrors(async (req, res, next) => {
   const { name, location, description } = req.body;
 

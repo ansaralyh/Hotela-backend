@@ -14,7 +14,7 @@ const customerSchema = new mongoose.Schema({
     },
     gender: {
         type: String,
-        enum: ['male', 'female']
+        enum: ['male', 'female','other']
 
     },
    
@@ -55,6 +55,7 @@ const customerSchema = new mongoose.Schema({
 
 
 
+  
 
 const customer = mongoose.model('customer', customerSchema);
 module.exports = customer;

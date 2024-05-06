@@ -37,7 +37,7 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
         .populate({
             path: "customer_id",
             select: "name"
-        });;
+        });
 
     if (complains.length === 0 || !complains) {
         return next(new ErrorHandler('Complains not found', 404));
@@ -49,8 +49,8 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
     const resolvedCount = await Complains.countDocuments({ isResolved: true });
 
     // Calculate count of unresolved complaints
-    const unresolvedCount = totalCount - resolvedCount; 
-    
+    const unresolvedCount = totalCount - resolvedCount;
+
     res.status(200).json({
         message: "Operation successful",
         result: complains,
@@ -73,7 +73,7 @@ exports.get = catchAsyncErrors(async (req, res, next) => {
         return next(new ErrorHandler("Couldn't find customer", 404))
     }
     res.status(200).json({
-        messege: "Operation successfull",
+        message: "Operation successful",
         result
     })
 })
@@ -81,14 +81,14 @@ exports.get = catchAsyncErrors(async (req, res, next) => {
 exports.updateComplainStatus = catchAsyncErrors(async (req, res, next) => {
     const complain_id = req.params.id;
 
-    const complain = await Complains.findById(compplain_id);
+    const complain = await Complains.findById(complain_id);
 
     if (!complain) {
         return next(new ErrorHandler('Complain not found', 404));
     }
 
     const updatedComplain = await Complains.findByIdAndUpdate(complain_id, {
-        isResolved:!complain.isResolved,
+        isResolved: !complain.isResolved,
     }, { new: true });
 
     res.status(200).json({
