@@ -16,5 +16,12 @@ const hotelSchema = new mongoose.Schema({
         type:String
     },
     
+},{
+    timestamps:true,
+    toJSON:{virtuals:true}
+})
+
+hotelSchema.virtual('id').get(function(){
+    return this._id
 })
 module.exports = mongoose.model('Hotel',hotelSchema)

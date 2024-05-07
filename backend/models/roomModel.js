@@ -19,6 +19,12 @@ const roomSchema = new mongoose.Schema({
         type: Number, // 0 for available and 1 for reserved
         default: 0
     }
+},{
+    timestamps:true,
+    toJSON:{virtuals:true}
 });
+roomSchema.virtual('id').get(function(){
+    return this._id
+})
 
 module.exports = mongoose.model('Room', roomSchema);

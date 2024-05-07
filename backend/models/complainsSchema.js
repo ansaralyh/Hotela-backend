@@ -15,6 +15,12 @@ const complainsSchema = new mongoose.Schema({
         default:false 
     },
 
+},{
+    timestamps:true,
+    toJSON:{virtuals:true}
+})
+complainsSchema.virtual('id').get(function(){
+    return this._id
 })
 
 module.exports = mongoose.model('complains',complainsSchema)

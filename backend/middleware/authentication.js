@@ -29,7 +29,7 @@ exports.auth = async (req, res, next) => {
         const user = await users.findById(decoded.id);
         // console.log(user)
         if(!user){
-            return next(new ErrorHandler('User not ffound'),404)
+            return next(new ErrorHandler('User not found'),404)
         }
         req.user = user;
         

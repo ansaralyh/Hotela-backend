@@ -11,7 +11,12 @@ const lookupSchema = mongoose.Schema({
     description:{
         type: String
     }
-,},{timestamps:true})
+,},{  timestamps:true,
+    toJSON:{virtuals:true}})
+
+    lookupSchema.virtual('id').get(function(){
+        return this._id
+    })
 
 
 module.exports = mongoose.model('Lookup',lookupSchema)

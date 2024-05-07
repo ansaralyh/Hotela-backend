@@ -41,6 +41,12 @@ const invoiceSchema = new mongoose.Schema({
     }
 }, {
     timestamps: true
+},{
+    timestamps:true,
+    toJSON:{virtuals:true}
 });
 
+invoiceSchema.virtual('id').get(function(){
+    return this._id
+})
 module.exports = mongoose.model("Invoice", invoiceSchema);

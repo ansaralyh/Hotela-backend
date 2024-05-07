@@ -18,7 +18,12 @@ const itemsSchema = new mongoose.Schema({
 
 },
     {
-        timestamps: true
+        timestamps:true,
+        toJSON:{virtuals:true}
     });
+
+    itemsSchema.virtual('id').get(function(){
+        return this._id
+    })
 
     module.exports = mongoose.model('Items',itemsSchema)

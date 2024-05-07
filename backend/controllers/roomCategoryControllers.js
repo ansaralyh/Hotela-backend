@@ -17,7 +17,7 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
 
   res.status(200).json({
     status: 200,
-    message: "Operation Successfull",
+    message: "Operation Successful",
     result,
   });
 });
@@ -34,7 +34,7 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
   }
 
   res.status(200).json({
-    message: "Operation Successfull",
+    message: "Operation Successful",
     result: categories,
   });
 });

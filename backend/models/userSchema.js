@@ -51,6 +51,11 @@ const userSchema = new mongoose.Schema({
     isEmailVerified :{
         type: String,
     }
+},{
+    timestamps:true,
+    toJSON:{virtuals:true}
 });
-
+userSchema.virtual('id').get(function(){
+    return this._id
+})
 module.exports = mongoose.model("users", userSchema)

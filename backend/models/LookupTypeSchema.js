@@ -9,8 +9,11 @@ const lookupTypeSchema = mongoose.Schema({
         type: String,
         required:true
     }
-},{timestamps:true})
+},{  timestamps:true,
+    toJSON:{virtuals:true}})
 
-
+    lookupTypeSchema.virtual('id').get(function(){
+        return this._id
+    })
 
 module.exports = mongoose.model('LookupType',lookupTypeSchema)

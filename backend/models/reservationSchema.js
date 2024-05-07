@@ -37,6 +37,13 @@ const reservationSchema = new mongoose.Schema({
         unique:true
     }
     
-});
+},{
+    timestamps:true,
+    toJSON:{virtuals:true} 
+})
+reservationSchema.virtual('id').get(function(){
+
+    return this._id
+})
 
 module.exports = mongoose.model('Reservations', reservationSchema);

@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { generateCustomIDMiddleware } = require('../utils/customeIdGenerator')
 
 const customerSchema = new mongoose.Schema({
 
@@ -51,7 +50,14 @@ const customerSchema = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:"Branch"
     }
+},{
+    timestamps:true,
+    toJSON:{virtuals:true}
 });
+
+customerSchema.virtual('id').get(function(){
+    return this._id
+})
 
 
 

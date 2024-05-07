@@ -23,10 +23,13 @@ const branchSchema = new mongoose.Schema({
     }
 },
     {
-        timestamps: true
+        timestamps: true,
+        toJSON:{virtuals:true}
     });
 
-
+branchSchema.virtual('id').get(function(){
+    return this._id
+});
 
 
 const Branch = mongoose.model('Branch', branchSchema);

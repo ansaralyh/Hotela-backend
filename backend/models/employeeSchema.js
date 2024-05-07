@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { generateCustomIDMiddleware } = require('../utils/customeIdGenerator')
 
 const employeeSchema = new mongoose.Schema({
 
@@ -53,10 +52,14 @@ const employeeSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Branch"
     }
+},{
+    timestamps:true,
+    toJSON:{virtuals:true}
 });
 
-// employeeSchema.pre('save', generateCustomIDMiddleware("Employee"));
-
+employeeSchema.virtual('id').get(function(){
+    return this._id
+})
 
 const Employee = mongoose.model('Employee', employeeSchema);
 
