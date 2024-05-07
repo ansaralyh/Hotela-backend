@@ -26,9 +26,6 @@ const employeeSchema = new mongoose.Schema({
         type: String,
 
     },
-    maritalStatus: {
-        type: String,
-    },
     emergencyContact: {
         type: String,
     },
@@ -46,9 +43,6 @@ const employeeSchema = new mongoose.Schema({
     bank_details:{
         iban: String,
         name: String
-    },
-    dob: {
-        type: Date
     },
     hotel_id: {
         type: mongoose.Schema.Types.ObjectId,
