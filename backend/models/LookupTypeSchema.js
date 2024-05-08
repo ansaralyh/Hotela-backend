@@ -5,7 +5,7 @@ const lookupTypeSchema = mongoose.Schema({
         type:String,
         required:[true, 'Please provide name']
     },
-    descripton:{
+    description:{
         type: String,
         required:true
     }

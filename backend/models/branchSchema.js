@@ -34,3 +34,7 @@ branchSchema.virtual('id').get(function(){
 
 const Branch = mongoose.model('Branch', branchSchema);
 module.exports = Branch;
+
+
+
+
