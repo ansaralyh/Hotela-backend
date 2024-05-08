@@ -21,7 +21,6 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
     const imageUrl = `${req.protocol}://${req.get("host")}/${fileName}`;
     req.body.image = imageUrl;
   }
-
   if (!name || !location || !image || !description) {
     return next(new ErrorHandler("Fields missing", 400));
   }

@@ -9,10 +9,6 @@ const reservationSchema = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:'Branch'
     },
-    booking_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        default: () => new mongoose.Types.ObjectId() 
-    },
     customer_id:{
         type: mongoose.Schema.Types.ObjectId,
         ref:'customer'
@@ -27,15 +23,6 @@ const reservationSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref:'Room'
     },
-    status:{
-        type:String,
-        enum : ['unpaid', 'paid'],
-        default:"unpaid"
-    },
-    cnic:{
-        type:String,
-        unique:true
-    }
     
 },{
     timestamps:true,

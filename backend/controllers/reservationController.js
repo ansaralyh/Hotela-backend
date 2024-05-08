@@ -58,6 +58,7 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
 });
 
 
+
 exports.index = catchAsyncErrors(async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
@@ -78,6 +79,7 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
         result: reservations,
     });
 });
+
 
 
 
