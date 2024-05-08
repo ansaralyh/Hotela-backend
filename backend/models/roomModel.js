@@ -1,30 +1,36 @@
-const mongoose = require('mongoose');
-const roomSchema = new mongoose.Schema({
+const mongoose = require("mongoose");
+const roomSchema = new mongoose.Schema(
+  {
     room_category: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Category"
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
     },
     room_number: {
-        type: Number,
-        unique: true
+      type: Number,
+      unique: true,
     },
-    image: {
-        type: String,
-    },
-    hotel_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Hotel"
-    },
-    isReserved: {
-        type: Number, // 0 for available and 1 for reserved
-        default: 0
-    }
-},{
-    timestamps:true,
-    toJSON:{virtuals:true}
-});
-roomSchema.virtual('id').get(function(){
-    return this._id
-})
+    images: [
+      {
+        url: String,
+      },
+    ],
 
-module.exports = mongoose.model('Room', roomSchema);
+    hotel_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Hotel",
+    },
+    branch_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Branch",
+    },
+  },
+  {
+    timestamps: true,
+    toJSON: { virtuals: true },
+  }
+);
+roomSchema.virtual("id").get(function () {
+  return this._id;
+});
+
+module.exports = mongoose.model("Room", roomSchema);

@@ -3,8 +3,8 @@ const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const Category = require("../models/roomCategorySchema");
 
 exports.store = catchAsyncErrors(async (req, res, next) => {
-  const { cost, name, occupancy, ammenities } = req.body;
-  if (!cost || !name || !occupancy || !ammenities) {
+  const { cost, name, occupancy, ammenities,branch_id } = req.body;
+  if (!cost || !name || !occupancy || !ammenities || !branch_id) {
     return next(new ErrorHandler("Fields missing"), 400);
   }
   const result = await Category.create({
@@ -13,6 +13,7 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
     occupancy,
     hotel_id: req.user.hotel_id,
     ammenities,
+    branch_id
   });
 
   res.status(200).json({

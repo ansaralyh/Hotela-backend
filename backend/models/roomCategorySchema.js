@@ -37,6 +37,10 @@ const roomCategoryScehma = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Hotel"
     },
+    branch_id:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'Branch'
+    }
     
 },{
     timestamps:true,

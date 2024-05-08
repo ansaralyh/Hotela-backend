@@ -3,8 +3,8 @@ const catchAsyncErrors = require('../middleware/catchAsyncErrors');
 const Hotel =  require('../models/hotelSchema');
 
 exports.store = catchAsyncErrors(async(req,res,next) =>{
-    const {name,email,location,contact,logo} = req.body;
-    if(!contact || !name || !email || !location || !logo){
+    const {name,email,location,contact} = req.body;
+    if(!contact || !name || !email || !location){
         return next(new ErrorHandler('Fields missing',400));
     }
     const hotel = await Hotel.create(req.body);
