@@ -31,7 +31,7 @@ router.use('/reservation',reservationRoutes)
 router.use('/items',itemsRoutes)
 router.use('/invoice',invoiceRoutes)    
 router.use('/complains',complainsRoutes)
-router.use('/lookupType',lookupTypeRoutes)
-router.use('/lookups',lookupsRoutes)
+router.use('/lookup-type',lookupTypeRoutes)
+router.use('/lookup',lookupsRoutes)
 
 module.exports = router
