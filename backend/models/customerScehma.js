@@ -27,9 +27,6 @@ const customerSchema = new mongoose.Schema({
     contact:{
         type:String
     },
-    emergencyContact: {
-        type: Number
-    },
     city: {
         type: String,
     },

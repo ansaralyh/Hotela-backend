@@ -13,6 +13,8 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
     contact,
     city,
     currentAddress,
+    permanentAddress,
+    maritalStatus
   } = req.body;
 
   if (
@@ -23,7 +25,9 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
     !branch_id ||
     !contact ||
     !city ||
-    !currentAddress
+    !currentAddress ||
+    !permanentAddress ||
+    !maritalStatus
   ) {
     return next(new ErrorHandler("Fields are missing", 400));
   }
@@ -64,9 +68,12 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const startIndex = (page - 1) * limit;
-  const accessTokenBranchId = req.user.branch_id;
+  const branch_id = req.query.branch_id;
 
-  const allCustomers = await Customer.find({ branch_id: accessTokenBranchId })
+  if(!branch_id){
+    return next(new ErrorHandler("Please provide branch id"))
+  }
+  const allCustomers = await Customer.find({ branch_id })
     .skip(startIndex)
     .limit(limit);
 
@@ -79,6 +86,8 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
     result: allCustomers,
   });
 });
+
+
 
 //Update customer details
 exports.update = catchAsyncErrors(async (req, res, next) => {

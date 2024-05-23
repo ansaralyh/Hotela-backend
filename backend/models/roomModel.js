@@ -23,6 +23,7 @@ const roomSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Branch",
     },
+    bed: String
   },
   {
     timestamps: true,

@@ -7,8 +7,9 @@ const path = require("path");
 const fs = require("fs");
 
 exports.store = catchAsyncErrors(async (req, res, next) => {
-  const { room_category, room_number , branch_id } = req.body;
+  const { room_category, room_number , branch_id,bed } = req.body;
   const { images } = req.files;
+
   if(!images){
     return next(new ErrorHandler("Please Provide Images",400))
 
@@ -16,7 +17,7 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
   if(images.length>5){
     return next(new ErrorHandler("Images should not be more then 5",400))
   }
-  if (!room_category || !room_number || ! branch_id) {
+  if (!room_category || !room_number || ! branch_id || !bed) {
     return next(new ErrorHandler("Fields missing", 400));
   }
   const uploadFolderPath = path.join(__dirname, "../uploads/room_images");
@@ -39,7 +40,8 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
     room_number,
     images: imageUrls,
     hotel_id: req.user.hotel_id,
-    branch_id
+    branch_id,
+    bed
   });
   res.status(200).json({
     message: "Operation Successful",
