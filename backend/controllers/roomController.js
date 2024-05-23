@@ -94,7 +94,7 @@ exports.getRoomsDropDown = catchAsyncErrors(async (req,res,next)=>{
   }
   const rooms = await Room.find({branch_id}).populate('room_category','name');
   res.status(200).json({
-    message: 'Operation Successfull',
+    message: 'Operation Successful',
     result: rooms
   })
 })
