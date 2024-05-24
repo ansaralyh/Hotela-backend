@@ -8,7 +8,7 @@ const jwt = require("jsonwebtoken");
 const sendEmail = require("../utils/sendEmail");
 const Hotel = require("../models/hotelSchema");
 
-/** Create hotel controller*/
+/**  hotel controller*/
 exports.store = catchAsyncErrors(async (req, res, next) => {
   const hashedPassword = await bcrypt.hash(req.body.password, salt);
   req.body.password = hashedPassword;
@@ -18,6 +18,7 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
     messege: "User created successfully",
   });
 });
+
 
 
 /**Login Owner */
