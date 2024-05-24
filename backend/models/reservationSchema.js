@@ -23,6 +23,12 @@ const reservationSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref:'Room'
     },
+    numOfPeople:{
+        type : Number
+    },
+    extraMetressCharges:{
+        type: Number
+    }
     
 },{
     timestamps:true,
