@@ -5,126 +5,188 @@ const Invoice = require("../models/invoiceSchema");
 const Room = require("../models/roomModel");
 const { calculateDaysBetweenCheckInOut } = require("../utils/dates");
 const Rooms = require("../models/roomModel");
-const Customer = require("../models/customerScehma")
+const Customer = require("../models/customerScehma");
+const customer = require("../models/customerScehma");
 
 exports.store = catchAsyncErrors(async (req, res, next) => {
-    const { customer_id, checkInDate, checkOutDate, room_id, branch_id, cnic } =
-        req.body;
-    if (!customer_id || !checkInDate || !checkOutDate || !room_id || !branch_id || !cnic) {
-        return next(new ErrorHandler("Fields missing", 400));
-    }
+  const {
+    checkInDate,
+    checkOutDate,
+    room_id,
+    branch_id,
+    cnic,
+    numOfPeople,
+    name,
+    contact,
+    currentAddress,
+    permanentAddress,
+    email,
+    gender,
+    maritalStatus,
+    city,
+    extraMetressCharges,
+  } = req.body;
 
-    const existingReservation = await Reservations.findOne({
-        room_id: room_id,
-        $or: [
-            {
-                checkInDate: { $lt: checkOutDate },
-                checkOutDate: { $gt: checkInDate },
-            },
-            { checkInDate: { $gte: checkInDate, $lt: checkOutDate } },
-            { checkOutDate: { $gt: checkInDate, $lte: checkOutDate } },
-        ],
-    });
+  if (
+    !checkInDate ||
+    !checkOutDate ||
+    !room_id ||
+    !branch_id ||
+    !cnic ||
+    !numOfPeople ||
+    !name ||
+    !contact ||
+    !currentAddress ||
+    !permanentAddress ||
+    !email ||
+    !gender ||
+    !maritalStatus ||
+    !city
+  ) {
+    return next(new ErrorHandler("Fields missing", 400));
+  }
 
-    if (existingReservation) {
-        return next(
-            new ErrorHandler("Room is already reserved for the selected dates", 400)
-        );
-    }
+  const existingReservation = await Reservations.findOne({
+    room_id: room_id,
+    $or: [
+      {
+        checkInDate: { $lt: checkOutDate },
+        checkOutDate: { $gt: checkInDate },
+      },
+      { checkInDate: { $gte: checkInDate, $lt: checkOutDate } },
+      { checkOutDate: { $gt: checkInDate, $lte: checkOutDate } },
+    ],
+  });
 
-    const reservation = await Reservations.create({
-        customer_id, 
+  if (existingReservation) {
+    return next(
+      new ErrorHandler("Room is already reserved for the selected dates", 400)
+    );
+  } else {
+    const existingCustomer = await customer.findOne({ cnic });
+    if (existingCustomer) {
+      const reservation = await Reservations.create({
+        customer_id: existingCustomer._id,
         checkInDate,
         checkOutDate,
         room_id,
         branch_id,
+        numOfPeople,
+        extraMetressCharges,
         hotel_id: req.user.id,
-    });
+      });
 
-    const days = calculateDaysBetweenCheckInOut(checkInDate, checkOutDate);
-    const room = await Room.findById(room_id).populate("room_category");
-    const amount = parseInt(days) * parseInt(room.room_category.cost);
-    const invoice = await Invoice.create({
-        customer_id,
-        reservation_id: reservation._id,
-        hotel_id: req.user.id,
-        branch_id,
-        total_amount: amount,
-    });
-    res.status(201).json({
+      res.status(200).json({
         message: "Operation successful",
-        result: { reservation, invoice },
-    });
+        result: reservation,
+      });
+    } else {
+        
+      const customer = await Customer.create({
+        name,
+        cnic,
+        email,
+        permanentAddress,
+        currentAddress,
+        contact,
+        gender,
+        maritalStatus,
+        city,
+        numOfPeople,
+        extraMetressCharges,
+        branch_id,
+        hotel_id: req.user.hotel_id,
+      });
+      const reservation = await Reservations.create({
+        customer_id: customer._id,
+        checkInDate,
+        checkOutDate,
+        room_id,
+        branch_id,
+        numOfPeople,
+        extraMetressCharges,
+        hotel_id: req.user.id,
+      });
+
+      res.status(200).json({
+        message: "Operation successful",
+        result: reservation,
+      });
+    }
+  }
+
+  // const days = calculateDaysBetweenCheckInOut(checkInDate, checkOutDate);
+  // const room = await Room.findById(room_id).populate("room_category");
+  // const amount = parseInt(days) * parseInt(room.room_category.cost);
+  // const invoice = await Invoice.create({
+  //     customer_id,
+  //     reservation_id: reservation._id,
+  //     hotel_id: req.user.id,
+  //     branch_id,
+  //     total_amount: amount,
+  // });
 });
-
-
 
 exports.index = catchAsyncErrors(async (req, res, next) => {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const startIndex = (page - 1) * limit;
-    const query = {};
-    if (req.query.checkInDate && req.query.checkOutDate) {
-        query.checkInDate = { $lte: req.query.checkInDate };
-        query.checkOutDate = { $gte: req.query.checkOutDate };
-    }
-    const reservations = await Reservations.find(query)
-        .skip(startIndex)
-        .limit(limit)
-        .populate("customer_id")
-        .populate({ path: "room_id", populate: { path: "room_category" } });
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const startIndex = (page - 1) * limit;
+  const query = {};
+  if (req.query.checkInDate && req.query.checkOutDate) {
+    query.checkInDate = { $lte: req.query.checkInDate };
+    query.checkOutDate = { $gte: req.query.checkOutDate };
+  }
+  const reservations = await Reservations.find(query)
+    .skip(startIndex)
+    .limit(limit)
+    .populate("customer_id")
+    .populate({ path: "room_id", populate: { path: "room_category" } });
 
-    res.status(200).json({
-        message: "Reservations retrieved successfully",
-        result: reservations,
-    });
+  res.status(200).json({
+    message: "Reservations retrieved successfully",
+    result: reservations,
+  });
 });
-
-
-
 
 exports.get = catchAsyncErrors(async (req, res, next) => {
-    const reservationId = req.params.id;
-    const reservation = await Reservations.findById(reservationId);
-    if (!reservation) {
-        return next(new ErrorHandler("Reservation not found", 404));
-    }
-    res.status(200).json({
-        message: "Reservation found",
-        result: reservation,
-    });
+  const reservationId = req.params.id;
+  const reservation = await Reservations.findById(reservationId);
+  if (!reservation) {
+    return next(new ErrorHandler("Reservation not found", 404));
+  }
+  res.status(200).json({
+    message: "Reservation found",
+    result: reservation,
+  });
 });
 
-
-
 exports.update = catchAsyncErrors(async (req, res, next) => {
-    const reservationId = req.params.id;
-    const updateData = req.body;
-    const updatedReservation = await Reservations.findByIdAndUpdate(
-        reservationId,
-        updateData,
-        { new: true }
-    );
-    if (!updatedReservation) {
-        return next(new ErrorHandler("Reservation not found", 404));
-    }
-    res.status(200).json({
-        message: "Reservation updated successfully",
-        result: updatedReservation,
-    });
+  const reservationId = req.params.id;
+  const updateData = req.body;
+  const updatedReservation = await Reservations.findByIdAndUpdate(
+    reservationId,
+    updateData,
+    { new: true }
+  );
+  if (!updatedReservation) {
+    return next(new ErrorHandler("Reservation not found", 404));
+  }
+  res.status(200).json({
+    message: "Reservation updated successfully",
+    result: updatedReservation,
+  });
 });
 
 exports.destroy = catchAsyncErrors(async (req, res, next) => {
-    const reservationId = req.params.id;
-    const deletedReservation = await Reservations.findByIdAndDelete(
-        reservationId
-    );
-    if (!deletedReservation) {
-        return next(new ErrorHandler("Reservation not found", 404));
-    }
-    res.status(200).json({
-        message: "Reservation deleted successfully",
-        result: deletedReservation,
-    });
+  const reservationId = req.params.id;
+  const deletedReservation = await Reservations.findByIdAndDelete(
+    reservationId
+  );
+  if (!deletedReservation) {
+    return next(new ErrorHandler("Reservation not found", 404));
+  }
+  res.status(200).json({
+    message: "Reservation deleted successfully",
+    result: deletedReservation,
+  });
 });
-

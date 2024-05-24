@@ -9,7 +9,6 @@ exports.auth = async (req, res, next) => {
   
     try {
         const authHeader = req.headers.authorization;
-        // console.log(authHeader)
 
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
             return res.status(401).json({ error: 'User not authenticated', message: 'Invalid token format.' });
@@ -25,7 +24,6 @@ exports.auth = async (req, res, next) => {
         // console.log(process.env.JWT_SECRET,token)
 
         const decoded = jsonwebtoken.verify(token, process.env.JWT_SECRET);
-        // console.log(decoded);
         const user = await users.findById(decoded.id);
         // console.log(user)
         if(!user){
@@ -43,8 +41,6 @@ exports.auth = async (req, res, next) => {
 
 exports.isAuthorizedRole = (roles) => {
     return (req, res, next) => {
-        // console.log(roles)
-        // console.log("req.user :",req.user.role)
         if (roles.includes(req.user.role)) {
             return next();
         }

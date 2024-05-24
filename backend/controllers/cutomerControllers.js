@@ -1,6 +1,7 @@
 const Customer = require("../models/customerScehma");
 const ErrorHandler = require("../utils/ErrorHandler");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
+const { Query } = require("mongoose");
 
 // Create customer
 exports.store = catchAsyncErrors(async (req, res, next) => {
@@ -14,7 +15,7 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
     city,
     currentAddress,
     permanentAddress,
-    maritalStatus
+    maritalStatus,
   } = req.body;
 
   if (
@@ -31,6 +32,7 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
   ) {
     return next(new ErrorHandler("Fields are missing", 400));
   }
+  console.log(exists)
   const result = await Customer.create({
     ...req.body,
     hotel_id: req.user.hotel_id,
@@ -70,8 +72,8 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
   const startIndex = (page - 1) * limit;
   const branch_id = req.query.branch_id;
 
-  if(!branch_id){
-    return next(new ErrorHandler("Please provide branch id"))
+  if (!branch_id) {
+    return next(new ErrorHandler("Please provide branch id"));
   }
   const allCustomers = await Customer.find({ branch_id })
     .skip(startIndex)
@@ -87,7 +89,28 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
+exports.dropdown = catchAsyncErrors(async (req, res, next) => {
+  const cnic = req.query.cnic;
+  const branch_id = req.query.branch_id;
 
+  if (!branch_id) {
+    return next(new ErrorHandler("Please provide branch id", 400));
+  }
+  const query = {};
+  query.branch_id = branch_id;
+  if (cnic) {
+    query.cnic = { $regex: new RegExp(cnic, "i") };
+  }
+
+  const customers = await Customer.find(
+    query,
+    "name contact email cnic hotel_id branch_id"
+  );
+  res.status(200).json({
+    message: "operation successfull",
+    result: customers,
+  });
+});
 
 //Update customer details
 exports.update = catchAsyncErrors(async (req, res, next) => {

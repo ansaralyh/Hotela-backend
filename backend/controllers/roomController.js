@@ -94,7 +94,7 @@ exports.getRoomsDropDown = catchAsyncErrors(async (req,res,next)=>{
           new ErrorHandler("Please provide branch id", 404)
       );
   }
-  const rooms = await Room.find({branch_id}).populate('room_category','name');
+  const rooms = await Room.find({branch_id},'room_number branch_id hotel_id').populate('room_category','name cost');
   res.status(200).json({
     message: 'Operation Successfull',
     result: rooms

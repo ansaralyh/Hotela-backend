@@ -7,7 +7,7 @@ const customerSchema = new mongoose.Schema({
 
     },
     cnic: {
-        type: Number,
+        type: String,
         unique:true
 
     },
