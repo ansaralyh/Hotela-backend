@@ -81,7 +81,6 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
         result: reservation,
       });
     } else {
-        
       const customer = await Customer.create({
         name,
         cnic,
@@ -132,6 +131,7 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
   const limit = parseInt(req.query.limit) || 10;
   const startIndex = (page - 1) * limit;
   const query = {};
+  query.branch_id = req.query.branch_id;
   if (req.query.checkInDate && req.query.checkOutDate) {
     query.checkInDate = { $lte: req.query.checkInDate };
     query.checkOutDate = { $gte: req.query.checkOutDate };
@@ -147,6 +147,34 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
     result: reservations,
   });
 });
+
+exports.getReservationsForDropdown = catchAsyncErrors(
+  async (req, res, next) => {
+    const status = req.query.status;
+    const branch_id = req.query.branch_id;
+    if (!branch_id) {
+      return next(new ErrorHandler("Please provide branch id", 400));
+    }
+
+    let query = {};
+    query.branch_id = req.query.branch_id;
+    if (status) {
+      if (status === "active") {
+        const today = new Date();
+        query.checkInDate = { $lte: today };
+        query.checkOutDate = { $gte: today };
+      }
+    }
+
+    const reservations = await Reservations.find(query)
+      .populate("customer_id", "name cnic")
+      .populate({ path: "room_id",select:'room_category room_number', populate: { path: "room_category",select:'name' } });
+    res.status(200).json({
+      message: "Operation successfull",
+      result: reservations,
+    });
+  }
+);
 
 exports.get = catchAsyncErrors(async (req, res, next) => {
   const reservationId = req.params.id;

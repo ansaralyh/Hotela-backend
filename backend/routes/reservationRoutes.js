@@ -1,11 +1,12 @@
 const express = require('express');
 const {auth,isAuthorizedRole} = require('../middleware/authentication');
-const { store, index ,get, update, destroy, checkAvailability} = require('../controllers/reservationController');
+const { store, index ,get, update, destroy, checkAvailability, getReservationsForDropdown} = require('../controllers/reservationController');
 const router = express.Router();
 
 router.post('/',auth,isAuthorizedRole(['owner', 'receptionist']),store)
 
 router.get('/',auth,isAuthorizedRole(['owner', 'receptionist']),index)
+router.get('/dropdown',auth,isAuthorizedRole(['owner', 'receptionist']),getReservationsForDropdown)
 
 router.get('/:id',auth,isAuthorizedRole(['owner', 'receptionist']),get)
 
