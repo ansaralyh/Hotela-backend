@@ -3,16 +3,16 @@ const Reservations = require("../models/reservationSchema");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const Invoice = require("../models/invoiceSchema");
 const Room = require("../models/roomModel");
-const { calculateDaysBetweenCheckInOut } = require("../utils/dates");
+const { calculateDaysBetweenCheckInOut, prettifyDate } = require("../utils/dates");
 const Rooms = require("../models/roomModel");
 const Customer = require("../models/customerScehma");
 const customer = require("../models/customerScehma");
-
+const ObjectId = require('mongodb').ObjectId;
 exports.store = catchAsyncErrors(async (req, res, next) => {
   const {
     checkInDate,
     checkOutDate,
-    room_id,
+    rooms,
     branch_id,
     cnic,
     numOfPeople,
@@ -25,12 +25,14 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
     maritalStatus,
     city,
     extraMetressCharges,
+    recieved_amount,
+    discount
   } = req.body;
 
   if (
     !checkInDate ||
     !checkOutDate ||
-    !room_id ||
+    !rooms ||
     !branch_id ||
     !cnic ||
     !numOfPeople ||
@@ -46,36 +48,78 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Fields missing", 400));
   }
 
-  const existingReservation = await Reservations.findOne({
-    room_id: room_id,
-    $or: [
-      {
-        checkInDate: { $lt: checkOutDate },
-        checkOutDate: { $gt: checkInDate },
-      },
-      { checkInDate: { $gte: checkInDate, $lt: checkOutDate } },
-      { checkOutDate: { $gt: checkInDate, $lte: checkOutDate } },
-    ],
-  });
+  const roomIds = rooms.map((room) => room.room_id);
 
-  if (existingReservation) {
-    return next(
-      new ErrorHandler("Room is already reserved for the selected dates", 400)
-    );
+  const checkIn = new Date(checkInDate).toISOString();
+  const checkOut = new Date(checkOutDate).toISOString();
+  const overlappingReservations = await Reservations.find({
+    "rooms.room_id": { $in: roomIds },
+    $or: [{ checkInDate: { $lt: checkOut }, checkOutDate: { $gt: checkIn } }],
+  })
+    .populate("rooms.room_id", "room_number")
+    .exec();
+
+  if (overlappingReservations.length > 0) {
+    const conflictingRooms = [];
+    overlappingReservations.forEach((reservation) => {
+      reservation.rooms.forEach((room) => {
+        if (roomIds.includes(room.room_id._id.toString())) {
+          conflictingRooms.push(room.room_id.room_number);
+        }
+      });
+    });
+    if (conflictingRooms.length === 1) {
+      return next(
+        new ErrorHandler(
+          `Room ${conflictingRooms.map(
+            (r) => r
+          )} is already reserved from ${prettifyDate(
+            overlappingReservations[0].checkInDate
+          )} to ${prettifyDate(overlappingReservations[0].checkOutDate)}`,
+          400
+        )
+      );
+    } else {
+      return next(
+        new ErrorHandler(
+          `Rooms ${conflictingRooms.map(
+            (r) => r
+          )} are already reserved from from ${prettifyDate(
+            overlappingReservations[0].checkInDate
+          )} to ${prettifyDate(overlappingReservations[0].checkOutDate)}`,
+          400
+        )
+      );
+    }
   } else {
     const existingCustomer = await customer.findOne({ cnic });
+    const days = calculateDaysBetweenCheckInOut(checkInDate, checkOutDate);
+      const reqRooms = await Room.find({branch_id,"_id":{$in:rooms.map((room) => new ObjectId(room.room_id))}}).populate("room_category");
+      const total_amount = reqRooms.map(r => r.room_category.cost).reduce((first,second)=> first + second,0) * Number(days);
+      if(recieved_amount){
+        total_amount = total_amount-recieved_amount
+      }
+      if(discount){
+        total_amount = total_amount-discount
+      }
     if (existingCustomer) {
+      
       const reservation = await Reservations.create({
-        customer_id: existingCustomer._id,
+        customer_id:existingCustomer._id,
         checkInDate,
         checkOutDate,
-        room_id,
+        rooms,
         branch_id,
         numOfPeople,
         extraMetressCharges,
+        total_days:days,
         hotel_id: req.user.id,
+        invoice:{
+          total_amount,
+          discount,
+          recieved_amount
+        }
       });
-
       res.status(200).json({
         message: "Operation successful",
         result: reservation,
@@ -97,33 +141,26 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
         hotel_id: req.user.hotel_id,
       });
       const reservation = await Reservations.create({
-        customer_id: customer._id,
+        customer_id:customer._id,
         checkInDate,
         checkOutDate,
-        room_id,
+        rooms,
         branch_id,
         numOfPeople,
         extraMetressCharges,
         hotel_id: req.user.id,
+        invoice:{
+          total_amount,
+          discount,
+          recieved_amount
+        }
       });
-
       res.status(200).json({
         message: "Operation successful",
         result: reservation,
       });
     }
   }
-
-  // const days = calculateDaysBetweenCheckInOut(checkInDate, checkOutDate);
-  // const room = await Room.findById(room_id).populate("room_category");
-  // const amount = parseInt(days) * parseInt(room.room_category.cost);
-  // const invoice = await Invoice.create({
-  //     customer_id,
-  //     reservation_id: reservation._id,
-  //     hotel_id: req.user.id,
-  //     branch_id,
-  //     total_amount: amount,
-  // });
 });
 
 exports.index = catchAsyncErrors(async (req, res, next) => {
@@ -140,7 +177,7 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
     .skip(startIndex)
     .limit(limit)
     .populate("customer_id")
-    .populate({ path: "room_id", populate: { path: "room_category" } });
+    .populate({ path: "rooms.room_id", populate: { path: "room_category" } });
 
   res.status(200).json({
     message: "Reservations retrieved successfully",
@@ -168,7 +205,11 @@ exports.getReservationsForDropdown = catchAsyncErrors(
 
     const reservations = await Reservations.find(query)
       .populate("customer_id", "name cnic")
-      .populate({ path: "room_id",select:'room_category room_number', populate: { path: "room_category",select:'name' } });
+      .populate({
+        path: "room_id",
+        select: "room_category room_number",
+        populate: { path: "room_category", select: "name" },
+      });
     res.status(200).json({
       message: "Operation successfull",
       result: reservations,

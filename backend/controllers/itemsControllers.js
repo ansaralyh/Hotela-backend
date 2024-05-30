@@ -26,6 +26,25 @@ exports.index = catchAsyncError(async (req, res, next) => {
   });
 });
 
+exports.foodItemsForDropdown = catchAsyncError(async (req,res,next)=>{
+  const search = req.query.search
+  const branch_id = req.query.branch_id;
+  const query = {}
+  if(!branch_id){
+    return next(new ErrorHandler("Please provide branch id",400))
+  }
+  query.branch_id = branch_id
+  if (search) {
+    query.name = { $regex: new RegExp(search, "i") };
+  }
+
+  const items = await Items.find(query);
+  res.status(200).json({
+    message: 'Operation successfull',
+    result :items
+  })
+})
+
 // Retrieve a single item by ID
 exports.get = catchAsyncError(async (req, res, next) => {
   const item = await Items.findById(req.params.id);

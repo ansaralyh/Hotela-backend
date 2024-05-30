@@ -6,3 +6,10 @@ exports.calculateDaysBetweenCheckInOut = (checkInDate, checkOutDate) => {
 
   return daysDifference;
 };
+
+
+exports.prettifyDate = (dateValue) => {
+  const options = { year: "numeric", month: "short", day: "numeric" };
+  const date = new Date(dateValue);
+  return date.toLocaleDateString("en-US", options);
+};
