@@ -3,11 +3,14 @@ const Reservations = require("../models/reservationSchema");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const Invoice = require("../models/invoiceSchema");
 const Room = require("../models/roomModel");
-const { calculateDaysBetweenCheckInOut, prettifyDate } = require("../utils/dates");
+const {
+  calculateDaysBetweenCheckInOut,
+  prettifyDate,
+} = require("../utils/dates");
 const Rooms = require("../models/roomModel");
 const Customer = require("../models/customerScehma");
 const customer = require("../models/customerScehma");
-const ObjectId = require('mongodb').ObjectId;
+const ObjectId = require("mongodb").ObjectId;
 exports.store = catchAsyncErrors(async (req, res, next) => {
   const {
     checkInDate,
@@ -26,7 +29,7 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
     city,
     extraMetressCharges,
     recieved_amount,
-    discount
+    discount,
   } = req.body;
 
   if (
@@ -94,31 +97,36 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
   } else {
     const existingCustomer = await customer.findOne({ cnic });
     const days = calculateDaysBetweenCheckInOut(checkInDate, checkOutDate);
-      const reqRooms = await Room.find({branch_id,"_id":{$in:rooms.map((room) => new ObjectId(room.room_id))}}).populate("room_category");
-      const total_amount = reqRooms.map(r => r.room_category.cost).reduce((first,second)=> first + second,0) * Number(days);
-      if(recieved_amount){
-        total_amount = total_amount-recieved_amount
-      }
-      if(discount){
-        total_amount = total_amount-discount
-      }
+    const reqRooms = await Room.find({
+      branch_id,
+      _id: { $in: rooms.map((room) => new ObjectId(room.room_id)) },
+    }).populate("room_category");
+    const total_amount =
+      reqRooms
+        .map((r) => r.room_category.cost)
+        .reduce((first, second) => first + second, 0) * Number(days);
+    if (recieved_amount) {
+      total_amount = total_amount - recieved_amount;
+    }
+    if (discount) {
+      total_amount = total_amount - discount;
+    }
     if (existingCustomer) {
-      
       const reservation = await Reservations.create({
-        customer_id:existingCustomer._id,
+        customer_id: existingCustomer._id,
         checkInDate,
         checkOutDate,
         rooms,
         branch_id,
         numOfPeople,
         extraMetressCharges,
-        total_days:days,
+        total_days: days,
         hotel_id: req.user.id,
-        invoice:{
+        invoice: {
           total_amount,
           discount,
-          recieved_amount
-        }
+          recieved_amount,
+        },
       });
       res.status(200).json({
         message: "Operation successful",
@@ -141,7 +149,7 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
         hotel_id: req.user.hotel_id,
       });
       const reservation = await Reservations.create({
-        customer_id:customer._id,
+        customer_id: customer._id,
         checkInDate,
         checkOutDate,
         rooms,
@@ -149,11 +157,11 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
         numOfPeople,
         extraMetressCharges,
         hotel_id: req.user.id,
-        invoice:{
+        invoice: {
           total_amount,
           discount,
-          recieved_amount
-        }
+          recieved_amount,
+        },
       });
       res.status(200).json({
         message: "Operation successful",
@@ -177,7 +185,8 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
     .skip(startIndex)
     .limit(limit)
     .populate("customer_id")
-    .populate({ path: "rooms.room_id", populate: { path: "room_category" } });
+    .populate({ path: "rooms.room_id", populate: { path: "room_category" } })
+    .populate("invoice.items.item_id");
 
   res.status(200).json({
     message: "Reservations retrieved successfully",
@@ -245,6 +254,46 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
     result: updatedReservation,
   });
 });
+
+exports.addItemstoReservationInvoice = catchAsyncErrors(
+  async (req, res, next) => {
+    const { items,recieved_amount } = req.body;
+    const reservation_id = req.params.reservation_id;
+    if (!reservation_id) {
+      return next(new ErrorHandler("Please provide reservation id", 404));
+    }
+    
+    // if (items.length === 0) {
+    //   return next(
+    //     new ErrorHandler("Please provide atleast one item to add", 400)
+    //   );
+    // }
+
+    const reservation = await Reservations.findById(reservation_id);
+    if (!reservation) {
+      return next(new ErrorHandler("Reservation not found"));
+    }
+    if (items.length > 0) {
+      await Promise.all(
+        items.map((item) => {
+          reservation.invoice.items.push(item);
+          reservation.invoice.total_amount =
+            Number(reservation.invoice.total_amount) + Number(item.total_amount);
+          
+        })
+      );
+    }
+    if(Number(recieved_amount) > 0){
+      reservation.invoice.recieved_amount = reservation.invoice.recieved_amount + Number(recieved_amount);
+    }
+    await reservation.save();
+
+    res.status(200).json({
+      message: "Operation successfull",
+      result: reservation,
+    });
+  }
+);
 
 exports.destroy = catchAsyncErrors(async (req, res, next) => {
   const reservationId = req.params.id;
