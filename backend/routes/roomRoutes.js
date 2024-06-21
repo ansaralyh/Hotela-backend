@@ -8,6 +8,8 @@ router.post('/',auth,isAuthorizedRole(['owner','receptionist']),store)
 
 //get all rooms
 router.get('/',auth,isAuthorizedRole(['owner','receptionist']),index)
+
+//rooms dropdown
 router.get('/dropdown',auth,isAuthorizedRole(['owner','receptionist']),getRoomsDropDown)
 
 //get single room
