@@ -20,7 +20,12 @@ const branchSchema = new mongoose.Schema({
     hotel_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Hotel"
+    },
+    petty_cash:{
+        type:Number,
+        default: 0
     }
+
 },
     {
         timestamps: true,

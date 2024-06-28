@@ -99,3 +99,22 @@ exports.destroy = catchAsyncErrors(async (req, res, next) => {
     message: "branch deleted successfully!",
   });
 });
+
+exports.addPettyCash = catchAsyncErrors(async (req, res, next) => {
+  const branchId = req.query.id;
+  const { amount } = req.body;
+
+  const branch = await Branch.findById(branchId);
+  if (!branch) {
+    return next(new AppError('Branch not found', 404));
+  }
+
+  branch.petty_cash += amount;
+  await branch.save();
+
+  res.status(200).json({
+    status: true,
+    message: 'Petty cash added successfully',
+    result: branch
+  });
+});
