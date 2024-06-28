@@ -11,20 +11,20 @@ exports.store = catchAsyncError(async (req, res, next) => {
 });
 
 // Retrieve all items
-exports.index = catchAsyncError(async (req, res, next) => {
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
-  const branch_id = req.query.branch_id;
-  if (!branch_id) {
-    return next(new ErrorHandler("Please provide branch id", 400));
-  }
-  const startIndex = (page - 1) * limit;
-  const items = await Items.find({ branch_id }).skip(startIndex).limit(limit);
-  res.status(200).json({
-    message: "Items retrieved successfully",
-    result: items,
+  exports.index = catchAsyncError(async (req, res, next) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const branch_id = req.query.branch_id;
+    if (!branch_id) {
+      return next(new ErrorHandler("Please provide branch id", 400));
+    }
+    const startIndex = (page - 1) * limit;
+    const items = await Items.find({ branch_id }).skip(startIndex).limit(limit);
+    res.status(200).json({
+      message: "Items retrieved successfully",
+      result: items,
+    });
   });
-});
 
 exports.foodItemsForDropdown = catchAsyncError(async (req,res,next)=>{
   const search = req.query.search

@@ -7,15 +7,16 @@ const employeeRoutes = require('./employeeRoute');
 const customerRoutes = require('./customerRoutes');
 const categoryRoutes = require('./roomCategoryRoutes');
 const roomRoutes = require('./roomRoutes');
-const receptionistRoutes = require('./receptionistRoutes')
+const receptionistRoutes = require('./receptionistRoutes');
 const hotelRoutes = require('./hotelRoutes');
 const reservationRoutes = require('./reservationRoutes');
 const itemsRoutes = require('./itemsRoutes');
 const invoiceRoutes = require('./invoiceRoutes');
-const complainsRoutes = require('./complainsRoutes')
-const lookupTypeRoutes = require('./LookuptypeRoute')
-const lookupsRoutes = require('./lookupsRoute')
-const foodInvoiceRoutes = require('./foodInvoiceRoutes')
+const complainsRoutes = require('./complainsRoutes');
+const lookupTypeRoutes = require('./LookuptypeRoute');
+const lookupsRoutes = require('./lookupsRoute');
+const foodInvoiceRoutes = require('./foodInvoiceRoutes');
+const expensesRoutes = require('./expensesRoutes')
 
 
 
@@ -34,5 +35,6 @@ router.use('/complains',complainsRoutes)
 router.use('/lookup-type',lookupTypeRoutes)
 router.use('/lookup',lookupsRoutes)
 router.use('/food-invoices',foodInvoiceRoutes)
+router.use('/expenses',expensesRoutes)
 
 module.exports = router
