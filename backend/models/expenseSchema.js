@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const expenseSchema = new mongoose.Schema({
 
-
+    name: String,
     hotel_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Hotel"
@@ -12,12 +12,15 @@ const expenseSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Branch"
     },
-    expense_category: {
+    category: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Lookup"
     },
     receipt: {
         type: String
+    },
+    cost:{
+        type: Number
     }
 }, {
     timestamps: true,

@@ -20,6 +20,24 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
 });
 
 
+exports.getUser = catchAsyncErrors(async (req,res,next)=>{
+  const user_id = req.query.user_id;
+
+  if(!user_id){
+    return next(new ErrorHandler('Please provide user id',401))
+  }
+  const user = await users.findById(user_id).populate('branch_id').populate('hotel_id')
+
+  if(!user){
+    return next(new ErrorHandler('User Not Found',404))
+  }
+
+  res.status(200).json({
+    message: 'Operation Successfull',
+    result:user
+  })
+})
+
 
 /**Login Owner */
 exports.login = catchAsyncErrors(async (req, res, next) => {

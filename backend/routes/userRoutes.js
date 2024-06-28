@@ -1,5 +1,6 @@
 const express = require('express')
-const { store, forgetPassword, verifyOtp, login, resetPassword } = require('../controllers/userController');
+const { store, forgetPassword, verifyOtp, login, resetPassword, getUser } = require('../controllers/userController');
+const { auth, isAuthorizedRole } = require('../middleware/authentication');
 
 const router = express.Router()
 
@@ -10,7 +11,7 @@ router.post('/', store)
 
 router.post('/login', login)
 
-
+router.get('/me',auth,isAuthorizedRole(['owner','receptionist']),getUser)
 // forget password
 router.post('/forgetPasword', forgetPassword);
 
