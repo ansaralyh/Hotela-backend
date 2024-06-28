@@ -65,3 +65,18 @@ exports.destroy = catchAsyncError(async (req, res, next) => {
     });
 
 });
+
+exports.getLookupsForDropdown = catchAsyncError(async (req,res,next)=>{
+    const id = req.params.id
+
+    if(!id){
+        return next(new ErrorHandler('Please provide look up type id',404))
+    }
+
+    const lookuptypes = await Lookups.find({lookup_type_id:id});
+
+    res.status(200).json({
+        message:"Operation successfull",
+        result: lookuptypes
+    })
+})

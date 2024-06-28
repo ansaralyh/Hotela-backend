@@ -3,11 +3,11 @@ const router = express.Router();
 const {auth,isAuthorizedRole} = require('../middleware/authentication');
 const { store, index, get, update, destroy } = require('../controllers/LookupTypeController');
 
-router.post('/',auth,isAuthorizedRole(['owner','receptionist']),store)
-router.get('/',auth,isAuthorizedRole(['owner','receptionist']),index)
-router.get('/:id',auth,isAuthorizedRole(['owner','receptionist']),get)
-router.put('/:id',auth,isAuthorizedRole(['owner','receptionist']),update)
-router.delete('/:id',auth,isAuthorizedRole(['owner','receptionist']),destroy)
+router.post('/',store)
+router.get('/',index)
+router.get('/:id',get)
+router.put('/:id',update)
+router.delete('/:id',destroy)
 
 
 
