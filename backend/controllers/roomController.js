@@ -82,7 +82,10 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
 
   res.status(200).json({
     message: "Operation Successfull",
-    result: rooms,
+    result: {
+      items:rooms,
+      meta:{}
+    },
   });
 });
 

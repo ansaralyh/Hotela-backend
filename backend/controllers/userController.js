@@ -47,8 +47,6 @@ exports.login = catchAsyncErrors(async (req, res, next) => {
   }
   const result = await users
     .findOne({ email })
-    .populate("hotel_id")
-    .populate("branch_id");
   if (!result) {
     return next(new ErrorHandler("Invalid credentials", 401));
   }
@@ -83,9 +81,10 @@ exports.login = catchAsyncErrors(async (req, res, next) => {
     const hotel = await Hotel.findById(result.hotel_id);
     res.status(200).json({
       message: "Logged in successfully",
-      result,
-      role: result.role,
-      accessToken: token,
+      result:{
+        user: result,
+        token,
+      }
     });
   }
 });

@@ -79,13 +79,13 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
     .skip(startIndex)
     .limit(limit);
 
-  if (!allCustomers) {
-    return next(new ErrorHandler("Customers not found"));
-  }
 
   res.status(200).json({
     success: true,
-    result: allCustomers,
+    result: {
+      items :allCustomers,
+      meta:{}
+    },
   });
 });
 

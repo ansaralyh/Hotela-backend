@@ -22,7 +22,10 @@ exports.store = catchAsyncError(async (req, res, next) => {
     const items = await Items.find({ branch_id }).skip(startIndex).limit(limit);
     res.status(200).json({
       message: "Items retrieved successfully",
-      result: items,
+      result: {
+        items,
+        meta:{}
+      },
     });
   });
 
