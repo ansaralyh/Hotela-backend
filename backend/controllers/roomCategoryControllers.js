@@ -3,8 +3,10 @@ const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const Category = require("../models/roomCategorySchema");
 
 exports.store = catchAsyncErrors(async (req, res, next) => {
-  const { cost, name, occupancy, ammenities,branch_id } = req.body;
-  if (!cost || !name || !occupancy || !ammenities || !branch_id) {
+  const { cost, name, occupancy,branch_id } = req.body;
+  if (!cost || !name || !occupancy  || !branch_id) {
+
+    console.log(req.body)
     return next(new ErrorHandler("Fields missing"), 400);
   }
   const result = await Category.create({
@@ -12,7 +14,6 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
     name,
     occupancy,
     hotel_id: req.user.hotel_id,
-    ammenities,
     branch_id
   });
 
@@ -24,15 +25,16 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.index = catchAsyncErrors(async (req, res, next) => {
+  const branch_id = req.query.branch_id
+  if(!branch_id){
+    return next(new ErrorHandler("Please provide branch id",404))
+  }
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const startIndex = (page - 1) * limit;
-  const categories = await Category.find({ hotel_id: req.user.hotel_id })
+  const categories = await Category.find({ hotel_id: req.user.hotel_id,branch_id })
     .skip(startIndex)
     .limit(limit);
-  if (!categories || categories.length <= 0) {
-    return next(new ErrorHandler("No categories to show", 400));
-  }
 
   res.status(200).json({
     message: "Operation Successful",
@@ -40,6 +42,18 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
       items:categories,
       meta:{}
     },
+  });
+});
+exports.dropdown = catchAsyncErrors(async (req, res, next) => {
+  const branch_id = req.query.branch_id
+  if(!branch_id){
+    return next(new ErrorHandler("Please provide branch id",404))
+  }
+  const categories = await Category.find({ hotel_id: req.user.hotel_id,branch_id })
+
+  res.status(200).json({
+    message: "Operation Successful",
+    result: categories
   });
 });
 

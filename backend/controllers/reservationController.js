@@ -190,7 +190,10 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
 
   res.status(200).json({
     message: "Reservations retrieved successfully",
-    result: reservations,
+    result: {
+      items: reservations,
+      meta: {},
+    },
   });
 });
 
@@ -228,15 +231,21 @@ exports.getReservationsForDropdown = catchAsyncErrors(
 
 exports.get = catchAsyncErrors(async (req, res, next) => {
   const reservationId = req.params.id;
-  const reservation = await Reservations.findById(reservationId);
+  const reservation = await Reservations.findById(reservationId)
+    .populate({ path: "rooms.room_id", populate: { path: "room_category" } })
+    .populate("customer_id")
+    .populate("invoice.items.item_id"); // Populate item_id inside invoice.items array
+  
   if (!reservation) {
     return next(new ErrorHandler("Reservation not found", 404));
   }
+  
   res.status(200).json({
     message: "Reservation found",
     result: reservation,
   });
 });
+
 
 exports.update = catchAsyncErrors(async (req, res, next) => {
   const reservationId = req.params.id;
@@ -257,12 +266,12 @@ exports.update = catchAsyncErrors(async (req, res, next) => {
 
 exports.addItemstoReservationInvoice = catchAsyncErrors(
   async (req, res, next) => {
-    const { items,recieved_amount } = req.body;
+    const { items, recieved_amount } = req.body;
     const reservation_id = req.params.reservation_id;
     if (!reservation_id) {
       return next(new ErrorHandler("Please provide reservation id", 404));
     }
-    
+
     // if (items.length === 0) {
     //   return next(
     //     new ErrorHandler("Please provide atleast one item to add", 400)
@@ -278,13 +287,14 @@ exports.addItemstoReservationInvoice = catchAsyncErrors(
         items.map((item) => {
           reservation.invoice.items.push(item);
           reservation.invoice.total_amount =
-            Number(reservation.invoice.total_amount) + Number(item.total_amount);
-          
+            Number(reservation.invoice.total_amount) +
+            Number(item.total_amount);
         })
       );
     }
-    if(Number(recieved_amount) > 0){
-      reservation.invoice.recieved_amount = reservation.invoice.recieved_amount + Number(recieved_amount);
+    if (Number(recieved_amount) > 0) {
+      reservation.invoice.recieved_amount =
+        reservation.invoice.recieved_amount + Number(recieved_amount);
     }
     await reservation.save();
 

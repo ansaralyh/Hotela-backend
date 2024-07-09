@@ -8,31 +8,32 @@ const roomCategoryScehma = new mongoose.Schema({
         type: String,
     },
     occupancy: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'Lookup'
     },
-    ammenities: {
-        air_conditioner: {
-            type: Number,
-            default: 0
-        },
-        hot_water: {
-            type: Number,
-            default: 0
-        },
-        wifi: {
-            type: Number,
-            default: 0
-        },
-        tv:
-        {
-            type: Number,
-            default: 0
-        },
-        refrigerator: {
-            type: Number,
-            default: 0
-        }
-    },
+    // ammenities: {
+    //     air_conditioner: {
+    //         type: Number,
+    //         default: 0
+    //     },
+    //     hot_water: {
+    //         type: Number,
+    //         default: 0
+    //     },
+    //     wifi: {
+    //         type: Number,
+    //         default: 0
+    //     },
+    //     tv:
+    //     {
+    //         type: Number,
+    //         default: 0
+    //     },
+    //     refrigerator: {
+    //         type: Number,
+    //         default: 0
+    //     }
+    // },
     hotel_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Hotel"

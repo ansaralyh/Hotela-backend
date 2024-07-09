@@ -9,11 +9,11 @@ const roomSchema = new mongoose.Schema(
       type: Number,
       unique: true,
     },
-    images: [
-      {
-        url: String,
-      },
-    ],
+    // images: [
+    //   {
+    //     url: String,
+    //   },
+    // ],
 
     hotel_id: {
       type: mongoose.Schema.Types.ObjectId,
