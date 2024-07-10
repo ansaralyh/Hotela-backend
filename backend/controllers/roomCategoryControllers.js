@@ -26,13 +26,14 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
 
 exports.index = catchAsyncErrors(async (req, res, next) => {
   const branch_id = req.query.branch_id
+  console.log(branch_id)
   if(!branch_id){
     return next(new ErrorHandler("Please provide branch id",404))
   }
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const startIndex = (page - 1) * limit;
-  const categories = await Category.find({ hotel_id: req.user.hotel_id,branch_id })
+  const categories = await Category.find({ hotel_id: req.user.hotel_id,branch_id }).populate('occupancy')
     .skip(startIndex)
     .limit(limit);
 

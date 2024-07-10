@@ -12,8 +12,8 @@ const customerSchema = new mongoose.Schema({
 
     },
     gender: {
-        type: String,
-        enum: ['male', 'female','other']
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'Lookup'
 
     },
    
@@ -21,8 +21,9 @@ const customerSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    maritalStatus: {
-        type: String
+    merital_status: {
+         type: mongoose.Schema.Types.ObjectId,
+        ref:'Lookup'
     },
     contact:{
         type:String
@@ -30,11 +31,11 @@ const customerSchema = new mongoose.Schema({
     city: {
         type: String,
     },
-    currentAddress: {
+    current_address: {
 
         type: String,
     },
-    permanentAddress: {
+    permanent_address: {
         type: String,
     }
     ,

@@ -74,7 +74,7 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
   // }
  
   // If no dates provided, fetch all rooms
-  const rooms = await Room.find({branch_id})
+  const rooms = await Room.find({branch_id}).populate('bed')
     .populate("room_category")
     .skip(startIndex)
     .limit(limit);
