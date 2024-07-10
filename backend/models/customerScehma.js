@@ -21,7 +21,7 @@ const customerSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    merital_status: {
+    marital_status: {
          type: mongoose.Schema.Types.ObjectId,
         ref:'Lookup'
     },

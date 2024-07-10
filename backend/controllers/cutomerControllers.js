@@ -33,13 +33,15 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Fields are missing", 400));
   }
 
-  const emailExists = await Customer.findOne({branch_id,email})
-  if(emailExists){
-    return next(new ErrorHandler('Customer with this email already registered'))
+  const emailExists = await Customer.findOne({ branch_id, email });
+  if (emailExists) {
+    return next(
+      new ErrorHandler("Customer with this email already registered")
+    );
   }
-  const cnicExists = await Customer.findOne({branch_id,cnic})
-  if(cnicExists){
-    return next(new ErrorHandler('Customer with this CNIC already registered'))
+  const cnicExists = await Customer.findOne({ branch_id, cnic });
+  if (cnicExists) {
+    return next(new ErrorHandler("Customer with this CNIC already registered"));
   }
   const result = await Customer.create({
     ...req.body,
@@ -57,7 +59,9 @@ exports.get = catchAsyncErrors(async (req, res, next) => {
   try {
     const result = await Customer.findById(req.params.id)
       .populate("hotel_id")
-      .populate("branch_id").populate('gender').populate('marital_status');
+      .populate("branch_id")
+      .populate("gender")
+      .populate("marital_status");
 
     if (!result) {
       return next(new ErrorHandler("No customer found with that Id", 404));
@@ -83,16 +87,17 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
   if (!branch_id) {
     return next(new ErrorHandler("Please provide branch id"));
   }
-  const allCustomers = await Customer.find({ branch_id }).populate('gender').populate('marital_status')
+  const allCustomers = await Customer.find({ branch_id })
+    .populate("gender")
+    .populate("marital_status")
     .skip(startIndex)
     .limit(limit);
-
 
   res.status(200).json({
     success: true,
     result: {
-      items :allCustomers,
-      meta:{}
+      items: allCustomers,
+      meta: {},
     },
   });
 });
@@ -110,10 +115,7 @@ exports.dropdown = catchAsyncErrors(async (req, res, next) => {
     query.cnic = { $regex: new RegExp(cnic, "i") };
   }
 
-  const customers = await Customer.find(
-    query,
-    "name contact email cnic hotel_id branch_id"
-  );
+  const customers = await Customer.find(query);
   res.status(200).json({
     message: "operation successfull",
     result: customers,
