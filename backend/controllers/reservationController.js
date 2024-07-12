@@ -18,16 +18,16 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
     rooms,
     branch_id,
     cnic,
-    numOfPeople,
+    num_of_people,
     name,
     contact,
-    currentAddress,
-    permanentAddress,
+    current_address,
+    permanent_address,
     email,
     gender,
-    maritalStatus,
+    marital_status,
     city,
-    extraMetressCharges,
+    extra_matress_charges,
     recieved_amount,
     discount,
   } = req.body;
@@ -38,14 +38,12 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
     !rooms ||
     !branch_id ||
     !cnic ||
-    !numOfPeople ||
     !name ||
     !contact ||
-    !currentAddress ||
-    !permanentAddress ||
+    !current_address ||
     !email ||
     !gender ||
-    !maritalStatus ||
+    !marital_status ||
     !city
   ) {
     return next(new ErrorHandler("Fields missing", 400));
@@ -118,8 +116,8 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
         checkOutDate,
         rooms,
         branch_id,
-        numOfPeople,
-        extraMetressCharges,
+        num_of_people,
+        extra_matress_charges,
         total_days: days,
         hotel_id: req.user.id,
         invoice: {
@@ -137,14 +135,12 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
         name,
         cnic,
         email,
-        permanentAddress,
-        currentAddress,
+        permanent_address,
+        current_address,
         contact,
         gender,
-        maritalStatus,
+        marital_status,
         city,
-        numOfPeople,
-        extraMetressCharges,
         branch_id,
         hotel_id: req.user.hotel_id,
       });
@@ -154,8 +150,8 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
         checkOutDate,
         rooms,
         branch_id,
-        numOfPeople,
-        extraMetressCharges,
+        num_of_people,
+        extra_matress_charges,
         hotel_id: req.user.id,
         invoice: {
           total_amount,
@@ -177,7 +173,7 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
   const startIndex = (page - 1) * limit;
   const query = {};
   query.branch_id = req.query.branch_id;
-  if (req.query.checkInDate && req.query.checkOutDate) {
+  if (req.query.checkInDate && req.query.checkOutDate) { 
     query.checkInDate = { $lte: req.query.checkInDate };
     query.checkOutDate = { $gte: req.query.checkOutDate };
   }

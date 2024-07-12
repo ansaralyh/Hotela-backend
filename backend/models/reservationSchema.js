@@ -28,10 +28,10 @@ const reservationSchema = new mongoose.Schema(
         },
       },
     ],
-    numOfPeople: {
+    num_of_people: {
       type: Number,
     },
-    extraMetressCharges: {
+    extra_matress_charges: {
       type: Number,
     },
     total_days:{
