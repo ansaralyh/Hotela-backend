@@ -17,7 +17,7 @@ const lookupTypeRoutes = require('./LookuptypeRoute');
 const lookupsRoutes = require('./lookupsRoute');
 const foodInvoiceRoutes = require('./foodInvoiceRoutes');
 const expensesRoutes = require('./expensesRoutes')
-
+const transactionRoutes = require('./transactionRoutes')
 
 
 router.use('/hotel',hotelRoutes)
@@ -36,5 +36,6 @@ router.use('/lookup-type',lookupTypeRoutes)
 router.use('/lookup',lookupsRoutes)
 router.use('/food-invoices',foodInvoiceRoutes)
 router.use('/expenses',expensesRoutes)
+router.use('/transactions',transactionRoutes)
 
 module.exports = router
