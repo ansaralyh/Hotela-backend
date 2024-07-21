@@ -7,26 +7,26 @@ const fs = require("fs");
 const Branch = require("../models/branchSchema");
 exports.store = catchAsyncErrors(async (req, res, next) => {
   const { branch_id, category, cost, name } = req.body;
-  const { receipt } = req.files || {};
+  // const { receipt } = req.files || {};
 
-  const uploadFolderPath = path.join(__dirname, "../uploads/receipts");
+  // const uploadFolderPath = path.join(__dirname, "../uploads/receipts");
 
-  let receiptUrl = null;
-  if (receipt) {
-    if (Array.isArray(receipt)) {
-      return next(new ErrorHandler("Only one receipt image is allowed", 400));
-    }
+  // let receiptUrl = null;
+  // if (receipt) {
+  //   if (Array.isArray(receipt)) {
+  //     return next(new ErrorHandler("Only one receipt image is allowed", 400));
+  //   }
 
-    if (!fs.existsSync(uploadFolderPath)) {
-      fs.mkdirSync(uploadFolderPath, { recursive: true });
-    }
-    const fileName = receipt.name;
-    const receiptPath = path.join(uploadFolderPath, fileName);
-    await receipt.mv(receiptPath);
-    receiptUrl = `${req.protocol}://${req.get(
-      "host"
-    )}/uploads/receipts/${fileName}`;
-  }
+  //   if (!fs.existsSync(uploadFolderPath)) {
+  //     fs.mkdirSync(uploadFolderPath, { recursive: true });
+  //   }
+  //   const fileName = receipt.name;
+  //   const receiptPath = path.join(uploadFolderPath, fileName);
+  //   await receipt.mv(receiptPath);
+  //   receiptUrl = `${req.protocol}://${req.get(
+  //     "host"
+  //   )}/uploads/receipts/${fileName}`;
+  // }
 
   const expensesData = {
     hotel_id: req.user.hotel_id,
@@ -36,9 +36,9 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
     name,
   };
 
-  if (receiptUrl) {
-    expensesData.receipt = receiptUrl;
-  }
+  // if (receiptUrl) {
+  //   expensesData.receipt = receiptUrl;
+  // }
 
   const expenses = await Expenses.create(expensesData);
   const branch = await Branch.findById(branch_id);
@@ -47,7 +47,7 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
   
   res.status(200).json({
     success: true,
-    expenses,
+    result: branch,
   });
 });
 

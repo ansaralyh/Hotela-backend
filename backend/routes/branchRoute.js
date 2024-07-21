@@ -1,20 +1,21 @@
 const express = require('express')
 const {auth, isAuthorizedRole} = require('../middleware/authentication');
-const { store, get, index, update, destroy, addPettyCash } = require('../controllers/branchController');
+const { store, get, index, update, destroy, addPettyCash, getDashboardData } = require('../controllers/branchController');
 const router = express.Router()
 
 router.post('/',auth,isAuthorizedRole(["owner","receptionist"]),store);
 router.post('/petty-cash',auth,isAuthorizedRole(["owner","receptionist"]),addPettyCash)
+router.get('/dashboard',auth,isAuthorizedRole(["owner","receptionist"]),getDashboardData)
 /**Single branch route */
-router.get("/:id",auth,isAuthorizedRole("owner","receptionist"),get);
+router.get("/:id",auth,isAuthorizedRole(["owner","receptionist"]),get);
 
 /**Get all branches */
-router.get("/",auth,isAuthorizedRole("owner","receptionist"),index)
+router.get("/",auth,isAuthorizedRole(["owner","receptionist"]),index)
 
 /**update a branch */
-router.put("/:id",auth,isAuthorizedRole("owner","receptionist"),update);
+router.put("/:id",auth,isAuthorizedRole(["owner","receptionist"]),update);
 
 /**delete a branch */
-router.delete("/:id",auth,isAuthorizedRole("owner","receptionist"),destroy);
+router.delete("/:id",auth,isAuthorizedRole(["owner","receptionist"]),destroy);
 
 module.exports = router

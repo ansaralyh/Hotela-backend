@@ -41,6 +41,7 @@ exports.auth = async (req, res, next) => {
 
 exports.isAuthorizedRole = (roles) => {
     return (req, res, next) => {
+        console.log('user role',req.user.role)
         if (roles.includes(req.user.role)) {
             return next();
         }
