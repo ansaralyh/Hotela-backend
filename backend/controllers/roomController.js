@@ -7,7 +7,7 @@ const path = require("path");
 const fs = require("fs");
 
 exports.store = catchAsyncErrors(async (req, res, next) => {
-  const { room_category, room_number , branch_id,bed } = req.body;
+  const { room_category, room_number, branch_id, bed } = req.body;
   // const { images } = req.files;
 
   // if(!images){
@@ -17,11 +17,11 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
   // if(images.length>5){
   //   return next(new ErrorHandler("Images should not be more then 5",400))
   // }
-  if (!room_category || !room_number || ! branch_id || !bed) {
+  if (!room_category || !room_number || !branch_id || !bed) {
     return next(new ErrorHandler("Fields missing", 400));
   }
   // const uploadFolderPath = path.join(__dirname, "../uploads/room_images");
-  
+
   // const imageUrls = []
   // if (images.length>0) {
   //   if (!fs.existsSync(uploadFolderPath)) {
@@ -40,7 +40,7 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
     room_number,
     hotel_id: req.user.hotel_id,
     branch_id,
-    bed
+    bed,
   });
   res.status(200).json({
     message: "Operation Successful",
@@ -51,7 +51,7 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
 //Get all rooms
 exports.index = catchAsyncErrors(async (req, res, next) => {
   const { branch_id } = req.query;
-  if(!branch_id){
+  if (!branch_id) {
     return next(new ErrorHandler("Please provide branch id", 404));
   }
   const page = parseInt(req.query.page) || 1;
@@ -72,9 +72,10 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
   //     availableRooms: availableRooms,
   //   });
   // }
- 
+
   // If no dates provided, fetch all rooms
-  const rooms = await Room.find({branch_id}).populate('bed')
+  const rooms = await Room.find({ branch_id })
+    .populate("bed")
     .populate("room_category")
     .skip(startIndex)
     .limit(limit);
@@ -82,26 +83,27 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
   res.status(200).json({
     message: "Operation Successfull",
     result: {
-      items:rooms,
-      meta:{}
+      items: rooms,
+      meta: {},
     },
   });
 });
 
-exports.getRoomsDropDown = catchAsyncErrors(async (req,res,next)=>{
+exports.getRoomsDropDown = catchAsyncErrors(async (req, res, next) => {
   const branch_id = req.query.branch_id;
 
-  if(!branch_id){
-      return next(
-          new ErrorHandler("Please provide branch id", 404)
-      );
+  if (!branch_id) {
+    return next(new ErrorHandler("Please provide branch id", 404));
   }
-  const rooms = await Room.find({branch_id},'room_number branch_id hotel_id').populate('room_category','name cost');
+  const rooms = await Room.find(
+    { branch_id },
+    "room_number branch_id hotel_id"
+  ).populate("room_category", "name cost");
   res.status(200).json({
-    message: 'Operation Successful',
-    result: rooms
-  })
-})
+    message: "Operation Successful",
+    result: rooms,
+  });
+});
 
 //function to find a room
 exports.get = catchAsyncErrors(async (req, res, next) => {
@@ -138,5 +140,52 @@ exports.destroy = catchAsyncErrors(async (req, res, next) => {
 
   res.status(200).json({
     message: "Operation successfully",
+  });
+});
+
+exports.checkAvailability = catchAsyncErrors(async (req, res, next) => {
+  const { startDate, endDate, branch_id } = req.query;
+
+  if (!branch_id) {
+    return next(new ErrorHandler('Please provide branch id', 400));
+  }
+
+  if (!startDate || !endDate) {
+    return next(new ErrorHandler("Start date and end date are required", 400));
+  }
+
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  if (isNaN(start.getTime()) || isNaN(end.getTime()) || start >= end) {
+    return next(new ErrorHandler("Invalid date range", 400));
+  }
+
+  // Find reservations that overlap with the given date range
+  const reservations = await Reservations.find({
+    branch_id,
+    $or: [
+      { checkInDate: { $lt: end }, checkOutDate: { $gt: start } },
+    ],
+  }).populate("rooms.room_id");
+
+  // Create a set of reserved room IDs
+  const reservedRoomIds = new Set(
+    reservations.flatMap(reservation => 
+      reservation.rooms.map(room => room.room_id.toString())
+    )
+  );
+
+  // Find all rooms for the given branch
+  const allRooms = await Room.find({ branch_id }).populate("room_category");
+
+  // Filter out reserved rooms
+  const availableRooms = allRooms.filter(
+    room => !reservedRoomIds.has(room._id.toString())
+  );
+
+  res.status(200).json({
+    message: "Rooms available",
+    result: availableRooms,
   });
 });

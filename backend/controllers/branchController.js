@@ -217,6 +217,15 @@ exports.getDashboardData = catchAsyncErrors(async (req, res, next) => {
       monthlyReservations[reservation.month].reservations = reservation.reservations;
     });
 
+    const createdAt = branch.createdAt;
+    const currentYear = new Date().getFullYear();
+    const createdYear = createdAt.getFullYear();
+    const years = [];
+
+    for (let year = createdYear; year <= currentYear; year++) {
+      years.push(year);
+    }
+
   const total_profit = total - total_expenses;
   res.status(200).json({
     message: "Operation Successfull",
@@ -227,7 +236,8 @@ exports.getDashboardData = catchAsyncErrors(async (req, res, next) => {
       total_rooms,
       total_bookings,
       upcomming_reservations: upcomingReservations,
-      monthly_reservations: monthlyReservations
+      monthly_reservations: monthlyReservations,
+      years
     },
   });
 });
