@@ -161,28 +161,25 @@ exports.checkAvailability = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Invalid date range", 400));
   }
 
-  // Find reservations that overlap with the given date range
-  const reservations = await Reservations.find({
+  const roomQuery = Room.find({ branch_id }).populate('room_category');
+  const reservationQuery = Reservations.find({
     branch_id,
+    'rooms.room_id': { $exists: true },
     $or: [
       { checkInDate: { $lt: end }, checkOutDate: { $gt: start } },
     ],
-  }).populate("rooms.room_id");
+  }).select('rooms.room_id');
 
-  // Create a set of reserved room IDs
-  const reservedRoomIds = new Set(
-    reservations.flatMap(reservation => 
-      reservation.rooms.map(room => room.room_id.toString())
-    )
-  );
+  const [rooms, overlappingReservations] = await Promise.all([roomQuery, reservationQuery]);
 
-  // Find all rooms for the given branch
-  const allRooms = await Room.find({ branch_id }).populate("room_category");
+  const reservedRoomIds = new Set();
+  overlappingReservations.forEach(reservation => {
+    reservation.rooms.forEach(room => {
+      reservedRoomIds.add(room.room_id.toString());
+    });
+  });
 
-  // Filter out reserved rooms
-  const availableRooms = allRooms.filter(
-    room => !reservedRoomIds.has(room._id.toString())
-  );
+  const availableRooms = rooms.filter(room => !reservedRoomIds.has(room._id.toString()));
 
   res.status(200).json({
     message: "Rooms available",

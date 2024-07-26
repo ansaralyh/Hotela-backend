@@ -54,6 +54,7 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
   const checkIn = new Date(checkInDate).toISOString();
   const checkOut = new Date(checkOutDate).toISOString();
   const overlappingReservations = await Reservations.find({
+    branch_id,
     "rooms.room_id": { $in: roomIds },
     $or: [{ checkInDate: { $lt: checkOut }, checkOutDate: { $gt: checkIn } }],
   })
@@ -173,9 +174,15 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
   const startIndex = (page - 1) * limit;
   const query = {};
   query.branch_id = req.query.branch_id;
-  if (req.query.checkInDate && req.query.checkOutDate) { 
-    query.checkInDate = { $lte: req.query.checkInDate };
-    query.checkOutDate = { $gte: req.query.checkOutDate };
+  const startDate = req.query.startDate;
+  const endDate = req.query.endDate;
+  const status = req.query.status;
+  if(status && status !== 'all'){
+    query.status = status
+  }
+  if (startDate && endDate) { 
+    query.checkInDate = { $lte: endDate };
+    query.checkOutDate = { $gte: startDate };
   }
   const reservations = await Reservations.find(query)
     .skip(startIndex)
@@ -184,11 +191,20 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
     .populate({ path: "rooms.room_id", populate: { path: "room_category" } })
     .populate("invoice.items.item_id");
 
+    const count = await Reservations.countDocuments(query);
+  const total_pages = count < limit ? 1 : Math.ceil(count / limit);
+
   res.status(200).json({
     message: "Reservations retrieved successfully",
     result: {
       items: reservations,
-      meta: {},
+      meta: {
+        total_items: count,
+        item_count: reservations.length,
+        items_per_page: limit,
+        current_page: page,
+        total_pages,
+      },
     },
   });
 });
