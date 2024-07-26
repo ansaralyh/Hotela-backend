@@ -14,6 +14,11 @@ const reservationSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "customer",
     },
+    status:{
+      type: String,
+      enum:['checked_in','confirmed','pending','no_show','checked_out'],
+      default:'pending'
+    },
     checkInDate: {
       type: Date,
     },

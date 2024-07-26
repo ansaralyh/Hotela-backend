@@ -21,12 +21,12 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
     num_of_people,
     name,
     contact,
-    current_address,
-    permanent_address,
+    // current_address,
+    // permanent_address,
     email,
     gender,
-    marital_status,
-    city,
+    // marital_status,
+    // city,
     extra_matress_charges,
     recieved_amount,
     discount,
@@ -40,11 +40,11 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
     !cnic ||
     !name ||
     !contact ||
-    !current_address ||
-    !email ||
-    !gender ||
-    !marital_status ||
-    !city
+    // !current_address ||
+    !email 
+    // !gender ||
+    // !marital_status ||
+    // !city
   ) {
     return next(new ErrorHandler("Fields missing", 400));
   }
@@ -135,12 +135,12 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
         name,
         cnic,
         email,
-        permanent_address,
-        current_address,
+        // permanent_address,
+        // current_address,
         contact,
         gender,
-        marital_status,
-        city,
+        // marital_status,
+        // city,
         branch_id,
         hotel_id: req.user.hotel_id,
       });

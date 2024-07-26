@@ -21,24 +21,23 @@ const customerSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    marital_status: {
-         type: mongoose.Schema.Types.ObjectId,
-        ref:'Lookup'
-    },
+    // marital_status: {
+    //      type: mongoose.Schema.Types.ObjectId,
+    //     ref:'Lookup'
+    // },
     contact:{
         type:String
     },
-    city: {
-        type: String,
-    },
-    current_address: {
+    // city: {
+    //     type: String,
+    // },
+    // current_address: {
 
-        type: String,
-    },
-    permanent_address: {
-        type: String,
-    }
-    ,
+    //     type: String,
+    // },
+    // permanent_address: {
+    //     type: String,
+    // },
     hotel_id:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"Hotel"
