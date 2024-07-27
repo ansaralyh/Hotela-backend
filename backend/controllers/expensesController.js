@@ -44,7 +44,7 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
   const branch = await Branch.findById(branch_id);
   branch.petty_cash = branch.petty_cash - Number(cost);
   await branch.save();
-  
+
   res.status(200).json({
     success: true,
     result: branch,
@@ -78,11 +78,20 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
     .populate("branch_id")
     .populate("hotel_id")
     .populate("category");
+
+  const count = await Expenses.countDocuments({ branch_id });
+  const total_pages = count < limit ? 1 : Math.ceil(count / limit);
   res.status(200).json({
     message: "expenses retrieved successfully",
     result: {
       items: expenses,
-      meta: {},
+      meta: {
+        total_items: count,
+        item_count: expenses.length,
+        items_per_page: limit,
+        current_page: page,
+        total_pages,
+      },
     },
   });
 });

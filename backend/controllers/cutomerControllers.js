@@ -12,23 +12,23 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
     email,
     branch_id,
     contact,
-    city,
-    current_address,
-    permanent_address,
-    marital_status,
+    // city,
+    // current_address,
+    // permanent_address,
+    // marital_status,
   } = req.body;
 
   if (
     !name ||
     !cnic ||
-    !gender ||
+    // !gender ||
     !email ||
     !branch_id ||
-    !contact ||
-    !city ||
-    !current_address ||
-    !permanent_address ||
-    !marital_status
+    !contact
+    // !city ||
+    // !current_address ||
+    // !permanent_address ||
+    // !marital_status
   ) {
     return next(new ErrorHandler("Fields are missing", 400));
   }
@@ -89,15 +89,23 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
   }
   const allCustomers = await Customer.find({ branch_id })
     .populate("gender")
-    .populate("marital_status")
     .skip(startIndex)
     .limit(limit);
+
+    const count = await Customer.countDocuments({ branch_id });
+  const total_pages = count < limit ? 1 : Math.ceil(count / limit);
 
   res.status(200).json({
     success: true,
     result: {
       items: allCustomers,
-      meta: {},
+      meta: {
+        total_items: count,
+        item_count: allCustomers.length,
+        items_per_page: limit,
+        current_page: page,
+        total_pages,
+      },
     },
   });
 });

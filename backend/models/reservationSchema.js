@@ -25,6 +25,9 @@ const reservationSchema = new mongoose.Schema(
     checkOutDate: {
       type: Date,
     },
+    vehicle_number:{
+      type: String,
+    },
     rooms: [
       {
         room_id: {
