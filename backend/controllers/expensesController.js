@@ -5,6 +5,8 @@ const { uploadFile } = require("../utils/uploadFiles");
 const path = require("path");
 const fs = require("fs");
 const Branch = require("../models/branchSchema");
+const { createTransaction } = require("./transactionController");
+const { lookupIds } = require("../utils/lookupIds");
 exports.store = catchAsyncErrors(async (req, res, next) => {
   const { branch_id, category, cost, name } = req.body;
   // const { receipt } = req.files || {};
@@ -41,6 +43,13 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
   // }
 
   const expenses = await Expenses.create(expensesData);
+  createTransaction({
+    hotel_id: req.user.hotel_id,
+    branch_id,
+    amount: cost,
+    description: "Expense",
+    status: lookupIds.TRANSACTION_STATUS_DEBIT,
+  });
   const branch = await Branch.findById(branch_id);
   branch.petty_cash = branch.petty_cash - Number(cost);
   await branch.save();

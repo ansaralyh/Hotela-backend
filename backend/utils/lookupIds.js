@@ -1,0 +1,5 @@
+exports.lookupIds = {
+    TRANSACTION_STATUS:"66b34235bacf55af64cfb159",
+    TRANSACTION_STATUS_CREDIT:'66b342afbacf55af64cfb15d',
+    TRANSACTION_STATUS_DEBIT:'66b342a1bacf55af64cfb15b'
+}

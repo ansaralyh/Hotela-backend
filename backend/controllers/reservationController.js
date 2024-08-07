@@ -10,6 +10,8 @@ const {
 const Rooms = require("../models/roomModel");
 const Customer = require("../models/customerScehma");
 const customer = require("../models/customerScehma");
+const { createTransaction } = require("./transactionController");
+const { lookupIds } = require("../utils/lookupIds");
 const ObjectId = require("mongodb").ObjectId;
 exports.store = catchAsyncErrors(async (req, res, next) => {
   const {
@@ -127,6 +129,15 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
           recieved_amount,
         },
       });
+      if(recieved_amount && recieved_amount >= 1){
+        createTransaction({
+          hotel_id:req.user.hotel_id,
+          branch_id,
+          amount:recieved_amount,
+          description:'Reservation',
+          status:lookupIds.TRANSACTION_STATUS_CREDIT
+        })
+      }
       res.status(200).json({
         message: "Operation successful",
         result: reservation,
