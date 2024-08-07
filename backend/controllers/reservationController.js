@@ -102,7 +102,7 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
       branch_id,
       _id: { $in: rooms.map((room) => new ObjectId(room.room_id)) },
     }).populate("room_category");
-    const total_amount =
+    let total_amount =
       reqRooms
         .map((r) => r.room_category.cost)
         .reduce((first, second) => first + second, 0) * Number(days);
@@ -171,6 +171,15 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
           recieved_amount,
         },
       });
+      if(recieved_amount && recieved_amount >= 1){
+        createTransaction({
+          hotel_id:req.user.hotel_id,
+          branch_id,
+          amount:recieved_amount,
+          description:'Reservation',
+          status:lookupIds.TRANSACTION_STATUS_CREDIT
+        })
+      }
       res.status(200).json({
         message: "Operation successful",
         result: reservation,
