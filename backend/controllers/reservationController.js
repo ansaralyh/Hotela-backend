@@ -43,7 +43,7 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
     !name ||
     !contact ||
     // !current_address ||
-    !email 
+    !email
     // !gender ||
     // !marital_status ||
     // !city
@@ -129,14 +129,14 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
           recieved_amount,
         },
       });
-      if(recieved_amount && recieved_amount >= 1){
+      if (recieved_amount && recieved_amount >= 1) {
         createTransaction({
-          hotel_id:req.user.hotel_id,
+          hotel_id: req.user.hotel_id,
           branch_id,
-          amount:recieved_amount,
-          description:'Reservation',
-          status:lookupIds.TRANSACTION_STATUS_CREDIT
-        })
+          amount: recieved_amount,
+          description: "Reservation",
+          status: lookupIds.TRANSACTION_STATUS_CREDIT,
+        });
       }
       res.status(200).json({
         message: "Operation successful",
@@ -171,14 +171,14 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
           recieved_amount,
         },
       });
-      if(recieved_amount && recieved_amount >= 1){
+      if (recieved_amount && recieved_amount >= 1) {
         createTransaction({
-          hotel_id:req.user.hotel_id,
+          hotel_id: req.user.hotel_id,
           branch_id,
-          amount:recieved_amount,
-          description:'Reservation',
-          status:lookupIds.TRANSACTION_STATUS_CREDIT
-        })
+          amount: recieved_amount,
+          description: "Reservation",
+          status: lookupIds.TRANSACTION_STATUS_CREDIT,
+        });
       }
       res.status(200).json({
         message: "Operation successful",
@@ -197,10 +197,10 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
   const startDate = req.query.startDate;
   const endDate = req.query.endDate;
   const status = req.query.status;
-  if(status && status !== 'all'){
-    query.status = status
+  if (status && status !== "all") {
+    query.status = status;
   }
-  if (startDate && endDate) { 
+  if (startDate && endDate) {
     query.checkInDate = { $lte: endDate };
     query.checkOutDate = { $gte: startDate };
   }
@@ -211,7 +211,7 @@ exports.index = catchAsyncErrors(async (req, res, next) => {
     .populate({ path: "rooms.room_id", populate: { path: "room_category" } })
     .populate("invoice.items.item_id");
 
-    const count = await Reservations.countDocuments(query);
+  const count = await Reservations.countDocuments(query);
   const total_pages = count < limit ? 1 : Math.ceil(count / limit);
 
   res.status(200).json({
@@ -267,17 +267,16 @@ exports.get = catchAsyncErrors(async (req, res, next) => {
     .populate({ path: "rooms.room_id", populate: { path: "room_category" } })
     .populate("customer_id")
     .populate("invoice.items.item_id"); // Populate item_id inside invoice.items array
-  
+
   if (!reservation) {
     return next(new ErrorHandler("Reservation not found", 404));
   }
-  
+
   res.status(200).json({
     message: "Reservation found",
     result: reservation,
   });
 });
-
 
 exports.update = catchAsyncErrors(async (req, res, next) => {
   const reservationId = req.params.id;
@@ -348,5 +347,38 @@ exports.destroy = catchAsyncErrors(async (req, res, next) => {
   res.status(200).json({
     message: "Reservation deleted successfully",
     result: deletedReservation,
+  });
+});
+
+exports.addPayment = catchAsyncErrors(async (req, res, next) => {
+  const reservationId = req.params.id;
+  const amount = req.body?.amount;
+  if (!reservationId || !amount) {
+    return next(new ErrorHandler("Fields Missing", 404));
+  }
+  const reservation = await Reservations.findById(reservationId);
+  if (!reservation) {
+    return next(
+      new ErrorHandler(`Reservation not found with id ${reservationId}`, 404)
+    );
+  }
+  if (
+    Number(reservation.invoice.recieved_amount + Number(amount)) >
+    reservation.invoice.total_amount
+  ) {
+    return next(
+      new ErrorHandler(
+        "Received amount should not be more then total remaining amount"
+      )
+    );
+  }
+
+  reservation.invoice.recieved_amount =
+    Number(reservation.invoice.recieved_amount) + Number(amount);
+  await reservation.save();
+
+  res.status(200).json({
+    message: "Operation Successfull",
+    result: [],
   });
 });
