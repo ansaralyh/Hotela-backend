@@ -25,23 +25,8 @@ const employeeSchema = new mongoose.Schema({
         type: String,
 
     },
-    emergencyContact: {
+    address: {
         type: String,
-    },
-    city: {
-        type: String,
-    },
-    currentAddress: {
-        type: String,
-
-    },
-    permanentAddress: {
-        type: String,
-
-    },
-    bank_details:{
-        iban: String,
-        name: String
     },
     hotel_id: {
         type: mongoose.Schema.Types.ObjectId,

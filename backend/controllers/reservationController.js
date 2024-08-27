@@ -351,7 +351,7 @@ exports.destroy = catchAsyncErrors(async (req, res, next) => {
 });
 
 exports.addPayment = catchAsyncErrors(async (req, res, next) => {
-  const reservationId = req.params.id;
+  const reservationId = req.params.reservationId;
   const amount = req.body?.amount;
   if (!reservationId || !amount) {
     return next(new ErrorHandler("Fields Missing", 404));

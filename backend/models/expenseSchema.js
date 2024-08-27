@@ -21,6 +21,9 @@ const expenseSchema = new mongoose.Schema({
     },
     cost:{
         type: Number
+    },
+    vendor_name:{
+        type: String
     }
 }, {
     timestamps: true,
