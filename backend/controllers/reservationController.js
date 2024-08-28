@@ -248,12 +248,10 @@ exports.getReservationsForDropdown = catchAsyncErrors(
     }
 
     const reservations = await Reservations.find(query)
-      .populate("customer_id", "name cnic")
-      .populate({
-        path: "room_id",
-        select: "room_category room_number",
-        populate: { path: "room_category", select: "name" },
-      });
+    .populate("customer_id")
+    .populate({ path: "rooms.room_id", populate: { path: "room_category" } })
+    .populate("invoice.items.item_id");;
+
     res.status(200).json({
       message: "Operation successfull",
       result: reservations,

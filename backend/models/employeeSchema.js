@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const employeeSchema = new mongoose.Schema({
 
-    possition: {
+    position: {
         type: String, //1.Manager 2.Chef, 3.Room Cleaner 
     },
     name: {
@@ -10,7 +10,6 @@ const employeeSchema = new mongoose.Schema({
     },
     cnic: {
         type: String,
-        unique: true,
     },
     gender: {
         type: String,

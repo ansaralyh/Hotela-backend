@@ -3,12 +3,12 @@ var bcrypt = require("bcryptjs");
 var salt = bcrypt.genSaltSync(10);
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const Employee = require("../models/employeeSchema");
-const { request } = require("express");
 
 /**Create  Employee */
 exports.store = catchAsyncErrors(async (req, res, next) => {
+  console.log(req.body)
   const {
-    possition,
+    position,
     name,
     cnic,
     gender,
@@ -20,7 +20,7 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
   } = req.body;
 
   const employee = await Employee.create({
-    possition,
+    position,
     name,
     email,
     cnic,
@@ -30,7 +30,6 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
     address,
     branch_id,
     hotel_id: req.body.hotel_id,
-    bank_details,
   });
   res.status(200).json({
     messege: "Operation successful",
