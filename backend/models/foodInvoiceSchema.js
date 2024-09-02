@@ -13,10 +13,10 @@ const foodInvoiceSchema = new mongoose.Schema({
       quantity: {
         type: Number,
       },
-      price: {
+      unit_price: {
         type: Number,
       },
-      total_price: {
+      total_amount: {
         type: Number,
       },
     },

@@ -374,6 +374,13 @@ exports.addPayment = catchAsyncErrors(async (req, res, next) => {
   reservation.invoice.recieved_amount =
     Number(reservation.invoice.recieved_amount) + Number(amount);
   await reservation.save();
+  createTransaction({
+    hotel_id: req.user.hotel_id,
+    branch_id: reservation.branch_id,
+    amount: amount,
+    description: "Reservation Payment",
+    status: lookupIds.TRANSACTION_STATUS_CREDIT,
+  });
 
   res.status(200).json({
     message: "Operation Successfull",
