@@ -34,17 +34,27 @@ exports.createFoodInvoice = catchAsyncErrors(async (req, res, next) => {
 
 exports.getAllFoodInvoices = catchAsyncErrors(async (req, res, next) => {
   const branch_id = req.query.branch_id;
+  const page = req.query.page || 1;
+  const limit = req.query.limit || 10;
   if (!branch_id) {
     return next(new ErrorHandler("Please provide branch id", 404));
   }
   const foodInvoices = await FoodInvoice.find({ branch_id }).populate(
     "items.item_id"
   );
+  const count = await FoodInvoice.countDocuments({ branch_id });
+  const total_pages = count < limit ? 1 : Math.ceil(count / limit);
   res.status(200).json({
     message: "Operational successfull",
     result: {
       items: foodInvoices,
-      meta: {},
+      meta: {
+        total_items: count,
+        item_count: foodInvoices.length,
+        items_per_page: limit,
+        current_page: page,
+        total_pages,
+      },
     },
   });
 });
@@ -55,7 +65,7 @@ exports.getSingleFoodInvoice = catchAsyncErrors(async (req, res, next) => {
   if (!id) {
     return next(new ErrorHandler("Please provide invoice id", 404));
   }
-  const foodInvoice = await FoodInvoice.findById(id);
+  const foodInvoice = await FoodInvoice.findById(id).populate("items.item_id");
   res.status(200).json({
     message: "Operation successfull",
     result: foodInvoice,

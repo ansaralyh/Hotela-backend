@@ -6,7 +6,6 @@ const Employee = require("../models/employeeSchema");
 
 /**Create  Employee */
 exports.store = catchAsyncErrors(async (req, res, next) => {
-  console.log(req.body)
   const {
     position,
     name,
