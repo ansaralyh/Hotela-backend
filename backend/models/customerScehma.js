@@ -8,7 +8,6 @@ const customerSchema = new mongoose.Schema({
     },
     cnic: {
         type: String,
-        unique:true
 
     },
     gender: {
@@ -19,7 +18,6 @@ const customerSchema = new mongoose.Schema({
    
     email: {
         type: String,
-        required: true,
     },
     // marital_status: {
     //      type: mongoose.Schema.Types.ObjectId,

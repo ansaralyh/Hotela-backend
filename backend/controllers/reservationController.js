@@ -39,11 +39,11 @@ exports.store = catchAsyncErrors(async (req, res, next) => {
     !checkOutDate ||
     !rooms ||
     !branch_id ||
-    !cnic ||
-    !name ||
-    !contact ||
+    // !cnic ||
+    !name 
+    // !contact 
     // !current_address ||
-    !email
+    // !email
     // !gender ||
     // !marital_status ||
     // !city
@@ -387,3 +387,25 @@ exports.addPayment = catchAsyncErrors(async (req, res, next) => {
     result: [],
   });
 });
+
+
+exports.updateReservationStatus = catchAsyncErrors(async (req,res,next)=>{
+  const {id} = req.params;
+  const {status} = req.body
+  if(!id){
+    return next(new ErrorHandler('Please Provide Reservation id', 409))
+  }
+  if(!status){
+    return next(new ErrorHandler('Please Provide Status', 409))
+  }
+  const reservation = await Reservations.findById(id)
+  if(!reservation){
+    return next(new ErrorHandler('Reservation Not Found', 404))
+  }
+  reservation.status = status;
+  await reservation.save()
+  res.status(200).json({
+    message:'Operation Successfull',
+    result:[]
+  })
+})

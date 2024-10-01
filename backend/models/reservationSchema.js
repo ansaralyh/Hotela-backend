@@ -14,10 +14,17 @@ const reservationSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "customer",
     },
-    status:{
+    status: {
       type: String,
-      enum:['checked_in','confirmed','pending','no_show','checked_out'],
-      default:'pending'
+      enum: [
+        "checked_in",
+        "confirmed",
+        "pending",
+        "no_show",
+        "checked_out",
+        "cancelled",
+      ],
+      default: "pending",
     },
     checkInDate: {
       type: Date,
@@ -25,7 +32,7 @@ const reservationSchema = new mongoose.Schema(
     checkOutDate: {
       type: Date,
     },
-    vehicle_number:{
+    vehicle_number: {
       type: String,
     },
     rooms: [
@@ -42,20 +49,20 @@ const reservationSchema = new mongoose.Schema(
     extra_matress_charges: {
       type: Number,
     },
-    total_days:{
-        type: Number
+    total_days: {
+      type: Number,
     },
     invoice: {
       items: [
         {
-          item_id:{
+          item_id: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Items",
           },
           quantity: Number,
           unit_price: Number,
           total_amount: Number,
-          date: Date
+          date: Date,
         },
       ],
 
@@ -64,7 +71,7 @@ const reservationSchema = new mongoose.Schema(
       },
       recieved_amount: {
         type: Number,
-        default: 0
+        default: 0,
       },
       discount: {
         type: Number,
@@ -74,39 +81,44 @@ const reservationSchema = new mongoose.Schema(
   {
     timestamps: true,
     toJSON: { virtuals: true },
-    toObject:{virtuals: true}
+    toObject: { virtuals: true },
   }
 );
 reservationSchema.virtual("id").get(function () {
   return this._id;
 });
 reservationSchema.virtual("rent_per_day").get(function () {
-  const total = this.rooms.map((room)=> room.room_id.room_category?.cost).reduce((first,second)=> first + second , 0);
+  const total = this.rooms
+    .map((room) => room.room_id.room_category?.cost)
+    .reduce((first, second) => first + second, 0);
   return Number(total);
 });
 reservationSchema.virtual("total_room_rent").get(function () {
-  return this.rooms.map((room)=> room.room_id.room_category?.cost).reduce((first,second)=> first + second , 0) * this.total_days;
+  return (
+    this.rooms
+      .map((room) => room.room_id.room_category?.cost)
+      .reduce((first, second) => first + second, 0) * this.total_days
+  );
 });
 
-reservationSchema.virtual('invoice.status').get(function () {
+reservationSchema.virtual("invoice.status").get(function () {
   if (this.invoice.total_amount > this.invoice.recieved_amount) {
-    return 'partial';
+    return "partial";
   } else if (this.invoice.total_amount === this.invoice.recieved_amount) {
-    return 'paid';
+    return "paid";
   } else {
-    return 'unpaid';
+    return "unpaid";
   }
 });
 
-
-reservationSchema.set('toJSON', {
+reservationSchema.set("toJSON", {
   virtuals: true,
   transform: function (doc, ret) {
     if (ret.invoice) {
       ret.invoice.status = doc.invoice.status;
     }
     return ret;
-  }
+  },
 });
 
 module.exports = mongoose.model("Reservations", reservationSchema);
