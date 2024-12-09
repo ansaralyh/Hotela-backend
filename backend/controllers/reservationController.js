@@ -351,29 +351,32 @@ exports.destroy = catchAsyncErrors(async (req, res, next) => {
 exports.addPayment = catchAsyncErrors(async (req, res, next) => {
   const reservationId = req.params.reservationId;
   const amount = req.body?.amount;
+
   if (!reservationId || !amount) {
     return next(new ErrorHandler("Fields Missing", 404));
   }
+
   const reservation = await Reservations.findById(reservationId);
   if (!reservation) {
     return next(
       new ErrorHandler(`Reservation not found with id ${reservationId}`, 404)
     );
   }
-  if (
-    Number(reservation.invoice.recieved_amount + Number(amount)) >
-    reservation.invoice.total_amount
-  ) {
-    return next(
-      new ErrorHandler(
-        "Received amount should not be more then total remaining amount"
-      )
-    );
+
+  const remainingAmount =
+    reservation.invoice.total_amount - reservation.invoice.recieved_amount;
+
+  reservation.invoice.recieved_amount += Number(amount);
+
+  let returnAmount = 0;
+  if (reservation.invoice.recieved_amount > reservation.invoice.total_amount) {
+    returnAmount =
+      reservation.invoice.recieved_amount - reservation.invoice.total_amount;
+    reservation.invoice.recieved_amount = reservation.invoice.total_amount;
   }
 
-  reservation.invoice.recieved_amount =
-    Number(reservation.invoice.recieved_amount) + Number(amount);
   await reservation.save();
+
   createTransaction({
     hotel_id: req.user.hotel_id,
     branch_id: reservation.branch_id,
@@ -383,10 +386,16 @@ exports.addPayment = catchAsyncErrors(async (req, res, next) => {
   });
 
   res.status(200).json({
-    message: "Operation Successfull",
-    result: [],
+    message: "Operation Successful",
+    result: {
+      receivedAmount: reservation.invoice.recieved_amount,
+      returnAmount: returnAmount,
+    },
   });
 });
+
+
+
 
 
 exports.updateReservationStatus = catchAsyncErrors(async (req,res,next)=>{
